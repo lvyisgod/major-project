@@ -4,10 +4,11 @@ Explain what you're gonna do here
 
 ## Needs to have list
 
-- thing one
-- thing two
+- take in a promt (text)
+- read the promt using a npl
+- take in a question on the promt
+- return an anwser based on the question
 
 ## Nice to have list 
 
-- other thing
-- some other thing
+- Another model to be able to do another think ie image reconition or number prodiction

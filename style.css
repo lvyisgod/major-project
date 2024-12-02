@@ -6,3 +6,13 @@ html, body {
 canvas {
   display: block;
 }
+
+#userPassage {
+  position: absolute;
+  display: block;
+  margin: auto;
+  width: 25%;
+  left: 50%;
+  border: 3px solid green;
+  padding: 10px;
+}

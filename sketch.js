@@ -35,6 +35,11 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   newBot = new qnaBot();
   newBot.loadQNAModel();
+
+
+  userPassage = createElement('textarea');
+  userPassage.position(width/2, height/2);
+  userPassage.elt.id = "userPassage";
 }
 
 function draw() {

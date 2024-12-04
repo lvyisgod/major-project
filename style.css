@@ -9,12 +9,18 @@ canvas {
 
 textarea {
   background-color: pink;
+  position: absolute;
   outline: none;
   resize: none;
   font-size: 15px;
   color: blueviolet;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   opacity: 0.6;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 33.3%;
+  left: 50%;
+  top: 50%;
 }
 
 button {
@@ -34,5 +40,5 @@ button:hover{
 button:active {
   transition-duration: 0s;
   background-color: rgb(175, 9, 9);
-  transform: scale(1.05);
+  transform: scale(0.95);
 }

@@ -9,20 +9,18 @@ let question;
 let passage;
 let isModelLoaded = false;
 let isAnswerLoaded;
-let newBot;
+let qnaNewBot, toxicityNewBot;
 let userPassage;
 let userQuestion;
-let answerButton;
 let answer;
-let bg = "green";
 let state = "startScreen";
-let qnaHasLoaded = false;
+let qnaHasLoaded = false, toxicityHasLoaded = false;
 let isElementsOnThisSceenLoaded = false;
-let qnaButton;
-let returnButton;
-let toxicitybutton
+let returnButton, toxicityButton, qnaButton, answerButton;
+const threshold = 0.6;
+let predictions;
 
-class qnaBot{
+class Bots{
   constructor(){
     this.model = undefined;
     this.answer = undefined;
@@ -35,6 +33,15 @@ class qnaBot{
 
   async findTheAnswer() {
     this.answer = await this.model.findAnswers(question, passage);
+  }
+
+  async loadToxicityModel() {
+    this.model = await toxicity.load(threshold);
+  }
+
+  async findIfPassageIsToxic() {
+    predictions = await this.model.classify(passage);
+    isModelLoaded = true;
   }
 }
 
@@ -52,13 +59,13 @@ function draw() {
   if (state === "startScreen"){
     background("purple");
     if (!isElementsOnThisSceenLoaded){
-      qnaButton = createButton("QNA Bot")
+      qnaButton = createButton("QNA Bot");
       qnaButton.elt.id = "startQNAButton";
       qnaButton.addClass("startScreenButtons");
 
-      toxicitybutton = createButton("Toxicity Detection")
-      toxicitybutton.elt.id = "startToxicitybutton";
-      toxicitybutton.addClass("startScreenButtons");
+      toxicityButton = createButton("Toxicity Detection");
+      toxicityButton.elt.id = "startToxicitybutton";
+      toxicityButton.addClass("startScreenButtons");
       
       isElementsOnThisSceenLoaded = true;
     }
@@ -67,18 +74,18 @@ function draw() {
       state = "qnaScreen";
       removeElements();
       isElementsOnThisSceenLoaded = false;
-    })
+    });
 
-    toxicitybutton.mousePressed(() => {
+    toxicityButton.mousePressed(() => {
       state = "toxicity";
       removeElements();
       isElementsOnThisSceenLoaded = false;
-    })
+    });
   }
 
   else if (state === "qnaScreen"){
     if (!qnaHasLoaded){
-      newBot = new qnaBot();
+      newBot = new Bots();
       newBot.loadQNAModel();
       qnaHasLoaded = true;
     }
@@ -86,7 +93,7 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
-      returnButton = createButton("return to start screen")
+      returnButton = createButton("return to start screen");
 
       answerButton = createButton('click for answer');
       answerButton.elt.id = "qnaButton";
@@ -105,7 +112,7 @@ function draw() {
       isElementsOnThisSceenLoaded = true;
     }
 
-    background(bg);
+    background("green");
     textAlign(CENTER, CENTER);
     textSize(15);
     fill('white');
@@ -131,12 +138,37 @@ function draw() {
     }
   }
 
-  else if (state = "toxicity") {
+  else if (state === "toxicity") {
     background("darkgreen");
 
     createAndAskIfReturnButtonPressed();
 
     isElementsOnThisSceenLoaded = true;
+
+    passage = "you are so bad and sexy";
+
+    if (!toxicityHasLoaded){
+      toxicityNewBot = new Bots();
+      toxicityNewBot.loadToxicityModel();
+      toxicityNewBot.findIfPassageIsToxic();
+      toxicityHasLoaded = true;
+    }
+
+    if (isModelLoaded){
+      for (let i = 0; i < 7; i++){
+        console.log(predictions[i].results[0].match);
+        for (let j = 0; j < 2; j++){
+          console.log(predictions[i].results[0].probabilities[j]);
+        }
+      }
+    }
+
+    // predictions[0].results[0].probabilities[0];
+    // 0.9982390403747559
+    // predictions[0].results[0].probabilities[1];
+    // 0.0017609137576073408
+    // predictions[0].results[0].match
+    // false
   }
 }
 
@@ -149,5 +181,5 @@ function createAndAskIfReturnButtonPressed(){
     state = "startScreen";
     removeElements();
     isElementsOnThisSceenLoaded = false;
-  })
+  });
 }

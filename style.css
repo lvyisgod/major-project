@@ -35,6 +35,8 @@ button {
 }
 
 #returnButton {
+  width: 10%;
+  height: 4%;
   top: 7.5%;
   left: 5%;
   background-color: darkred;

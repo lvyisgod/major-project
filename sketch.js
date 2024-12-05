@@ -17,6 +17,10 @@ let answer;
 let bg = "green";
 let state = "startScreen";
 let qnaHasLoaded = false;
+let isElementsOnThisSceenLoaded = false;
+let qnaButton;
+let returnButton;
+let toxicitybutton
 
 class qnaBot{
   constructor(){
@@ -43,19 +47,49 @@ function setup() {
 }
 
 function draw() {
+  resizeCanvas(windowWidth, windowHeight);
 
   if (state === "startScreen"){
-    background("white");
+    background("purple");
+    if (!isElementsOnThisSceenLoaded){
+      qnaButton = createButton("QNA Bot")
+      qnaButton.elt.id = "startQNAButton";
+      qnaButton.addClass("startScreenButtons");
+
+      toxicitybutton = createButton("Toxicity Detection")
+      toxicitybutton.elt.id = "startToxicitybutton";
+      toxicitybutton.addClass("startScreenButtons");
+      
+      isElementsOnThisSceenLoaded = true;
+    }
+
+    qnaButton.mousePressed(() => {
+      state = "qnaScreen";
+      removeElements();
+      isElementsOnThisSceenLoaded = false;
+    })
+
+    toxicitybutton.mousePressed(() => {
+      state = "toxicity";
+      removeElements();
+      isElementsOnThisSceenLoaded = false;
+    })
   }
 
   else if (state === "qnaScreen"){
     if (!qnaHasLoaded){
       newBot = new qnaBot();
       newBot.loadQNAModel();
+      qnaHasLoaded = true;
+    }
+
+    createAndAskIfReturnButtonPressed();
+
+    if (!isElementsOnThisSceenLoaded){
+      returnButton = createButton("return to start screen")
 
       answerButton = createButton('click for answer');
-      answerButton.position(width/2, height/1.9);
-      answerButton.center("horizontal");
+      answerButton.elt.id = "qnaButton";
       answerButton.mousePressed(() => {
         question = userQuestion.elt.value;
         passage = userPassage.elt.value;
@@ -64,13 +98,11 @@ function draw() {
 
       userPassage = createElement("textarea", "Input a passage");
       userQuestion = createElement("textarea", "Input a question");
-      // userPassage.size(width/2, height/3);
-      userQuestion.size(350, 50);
-      // userPassage.position(0, height/16);
-      userQuestion.position(0, height/2.25); 
-      // userPassage.center("horizontal");
-      // userQuestion.center("horizontal");
-      qnaHasLoaded = true;
+      userPassage.elt.id = "qnaUserPassage";
+      userQuestion.elt.id = "qnaUserQuestion";
+      userPassage.addClass("qnaInputs");
+      userQuestion.addClass("qnaInputs");
+      isElementsOnThisSceenLoaded = true;
     }
 
     background(bg);
@@ -98,8 +130,24 @@ function draw() {
       }
     }
   }
+
+  else if (state = "toxicity") {
+    background("darkgreen");
+
+    createAndAskIfReturnButtonPressed();
+
+    isElementsOnThisSceenLoaded = true;
+  }
 }
 
-function mousePressed(){
-  state = "qnaScreen";
+function createAndAskIfReturnButtonPressed(){
+  if (!isElementsOnThisSceenLoaded){
+    returnButton = createButton("return to start screen");
+    returnButton.elt.id = "returnButton";
+  }
+  returnButton.mousePressed(() => {
+    state = "startScreen";
+    removeElements();
+    isElementsOnThisSceenLoaded = false;
+  })
 }

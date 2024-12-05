@@ -7,7 +7,45 @@ canvas {
   display: block;
 }
 
-textarea {
+button {
+  position: absolute;
+  outline: none;
+  transition-duration: 0.4s;
+}
+
+.startScreenButtons {
+  width: 8.3%;
+  height: 4%;
+  background-color: indianred;
+}
+
+.startScreenButtons:hover{
+  transform: scale(1.05);
+  background-color: lightcoral;
+}
+
+#startToxicitybutton {
+  left: 40%;
+  top: 40%;
+}
+
+#startQNAButton {
+  left: 25%;
+  top: 40%;
+}
+
+#returnButton {
+  top: 7.5%;
+  left: 5%;
+  background-color: darkred;
+}
+
+#returnButton:hover {
+  background-color: crimson;
+  transform: scale(1.05);
+}
+
+.qnaInputs {
   background-color: pink;
   position: absolute;
   outline: none;
@@ -16,28 +54,37 @@ textarea {
   color: blueviolet;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   opacity: 0.6;
-  transform: translate(-50%, -50%);
-  width: 50%;
-  height: 33.3%;
   left: 50%;
-  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
-button {
-  outline: none;
+#qnaUserPassage {
+  width: 50%;
+  height: 33.6%;
+  top: 25%;
+}
+
+#qnaUserQuestion {
+  width: 30%;
+  height: 5%;
+  top: 45%;
+}
+
+#qnaButton {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   background-color: blueviolet;
-  transition-duration: 0.4s;
-  width: 125px;
-  height: 40px;
+  width: 10%;
+  height: 5%;
+  left: 45%;
+  top: 55%;
 }
 
-button:hover{
+#qnaButton:hover{
   background-color: brown;
   transform: scale(1.05);
 }
 
-button:active {
+#qnaButton:active {
   transition-duration: 0s;
   background-color: rgb(175, 9, 9);
   transform: scale(0.95);

@@ -5,9 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let question;
-let passage;
-let isModelLoaded = false;
 let isAnswerLoaded;
 let qnaNewBot, toxicityNewBot;
 let userPassage;
@@ -20,28 +17,33 @@ let returnButton, toxicityButton, qnaButton, answerButton;
 const threshold = 0.6;
 let predictions;
 
+let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
+
 class Bots{
   constructor(){
     this.model = undefined;
     this.answer = undefined;
+    this.isThisModelLoaded = false;
+    this.passage;
+    this.question;
   }
 
   async loadQNAModel() {
     this.model = await qna.load();
-    isModelLoaded = true;
+    this.isThisModelLoaded = true;
   }
 
   async findTheAnswer() {
-    this.answer = await this.model.findAnswers(question, passage);
+    this.answer = await this.model.findAnswers(this.question, this.passage);
   }
 
   async loadToxicityModel() {
     this.model = await toxicity.load(threshold);
+    this.isThisModelLoaded = true;
   }
 
   async findIfPassageIsToxic() {
-    predictions = await this.model.classify(passage);
-    isModelLoaded = true;
+    predictions = await this.model.classify(this.passage);
   }
 }
 
@@ -93,13 +95,11 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
-      returnButton = createButton("return to start screen");
-
       answerButton = createButton('click for answer');
       answerButton.elt.id = "qnaButton";
       answerButton.mousePressed(() => {
-        question = userQuestion.elt.value;
-        passage = userPassage.elt.value;
+        newBot.question = userQuestion.elt.value;
+        newBot.passage = userPassage.elt.value;
         newBot.findTheAnswer();
       });
 
@@ -129,7 +129,7 @@ function draw() {
     }
 
     catch {
-      if (isModelLoaded){
+      if (newBot.isThisModelLoaded){
         text("model is loaded", width/2, height/1.6);
       }
       else{
@@ -141,25 +141,44 @@ function draw() {
   else if (state === "toxicity") {
     background("darkgreen");
 
-    createAndAskIfReturnButtonPressed();
-
-    isElementsOnThisSceenLoaded = true;
-
-    passage = "you are so bad and sexy";
-
     if (!toxicityHasLoaded){
       toxicityNewBot = new Bots();
       toxicityNewBot.loadToxicityModel();
-      toxicityNewBot.findIfPassageIsToxic();
       toxicityHasLoaded = true;
     }
 
-    if (isModelLoaded){
+    createAndAskIfReturnButtonPressed();
+
+    if (!isElementsOnThisSceenLoaded){
+      answerButton = createButton('click for answer');
+      answerButton.elt.id = "qnaButton";
+      answerButton.mousePressed(() => {
+        toxicityNewBot.findIfPassageIsToxic();
+      });
+
+      isElementsOnThisSceenLoaded = true;
+    }
+
+    toxicityNewBot.passage = "I hate your guts.";
+
+    try{
       for (let i = 0; i < 7; i++){
-        console.log(predictions[i].results[0].match);
-        for (let j = 0; j < 2; j++){
-          console.log(predictions[i].results[0].probabilities[j]);
+        if (predictions[i].results[0].match === null){
+          predictions[i].results[0].match = "not confident to make a choice";
         }
+        text(`Is it a ${wordList[i]}: ${predictions[i].results[0].match}` , width/2, height/3 + i * 20);
+        for (let j = 0; j < 2; j++){
+          text(predictions[i].results[0].probabilities[j], width/2 + j * 200, height/1.5 + i * 20);
+        }
+      }
+    }
+
+    catch{
+      if (toxicityNewBot.isThisModelLoaded){
+        text("it is loaded", width/2, height/2);
+      }
+      else{
+        text("wait to load", width/2, height/2);
       }
     }
 

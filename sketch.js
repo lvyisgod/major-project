@@ -56,6 +56,7 @@ function setup() {
 }
 
 function draw() {
+  textAlign(CENTER, CENTER);
   resizeCanvas(windowWidth, windowHeight);
 
   if (state === "startScreen"){
@@ -113,7 +114,6 @@ function draw() {
     }
 
     background("green");
-    textAlign(CENTER, CENTER);
     textSize(15);
     fill('white');
 
@@ -150,16 +150,32 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
+      let table = createElement("table", "");
+      let TR1 = createElement("tr", "");
+      TR1.parent(table);
+      let TR2 = createElement("tr", "");
+      TR2.parent(table);
+      let TH1 = createElement("th", "");
+      TH1.parent(TR1);
+      let TH2 = createElement("th", "");
+      TH2.parent(TR2);
+
+      table.elt.id = "dog";
+
+      userPassage = createElement("textarea", "input a passage");
+      userPassage.elt.id = "toxicityPassage";
+
       answerButton = createButton('click for answer');
       answerButton.elt.id = "qnaButton";
       answerButton.mousePressed(() => {
-        toxicityNewBot.findIfPassageIsToxic();
+        if (toxicityNewBot.isThisModelLoaded){
+          toxicityNewBot.passage = userPassage.elt.value;
+          toxicityNewBot.findIfPassageIsToxic();
+        }
       });
 
       isElementsOnThisSceenLoaded = true;
     }
-
-    toxicityNewBot.passage = "I hate your guts.";
 
     try{
       for (let i = 0; i < 7; i++){

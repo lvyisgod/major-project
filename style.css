@@ -13,6 +13,18 @@ button {
   transition-duration: 0.4s;
 }
 
+#toxicityPassage {
+  resize: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 30%;
+  width: 30%;
+  height: 20%;
+  opacity: 60%;
+  background-color: aquamarine;
+}
+
 .startScreenButtons {
   width: 8.3%;
   height: 4%;

@@ -150,17 +150,7 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
-      let table = createElement("table", "");
-      let TR1 = createElement("tr", "");
-      TR1.parent(table);
-      let TR2 = createElement("tr", "");
-      TR2.parent(table);
-      let TH1 = createElement("th", "");
-      TH1.parent(TR1);
-      let TH2 = createElement("th", "");
-      TH2.parent(TR2);
-
-      table.elt.id = "dog";
+      createTable();
 
       userPassage = createElement("textarea", "input a passage");
       userPassage.elt.id = "toxicityPassage";
@@ -217,4 +207,10 @@ function createAndAskIfReturnButtonPressed(){
     removeElements();
     isElementsOnThisSceenLoaded = false;
   });
+}
+
+function createTable(){
+
+  let tbl = index.createElement("table");
+  console.log(tbl);
 }

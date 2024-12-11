@@ -16,6 +16,7 @@ let isElementsOnThisSceenLoaded = false;
 let returnButton, toxicityButton, qnaButton, answerButton;
 const threshold = 0.6;
 let predictions;
+let tbl
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
 
@@ -150,7 +151,25 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
-      createTable();
+
+      tbl = createElement("table");
+
+      for (let word of wordList){
+        let tr = createElement("tr");
+        tbl.child(tr);
+        for (let i = 0; i < 4; i++){
+          if (i === 0){
+            theValue = createElement("th", word);
+          }
+          else{
+            theValue = createElement("td", "waiting for input");
+            theValue.addClass("numbers")
+          }
+          tr.child(theValue);
+        }
+      }
+
+      // createTable();
 
       userPassage = createElement("textarea", "input a passage");
       userPassage.elt.id = "toxicityPassage";
@@ -207,10 +226,4 @@ function createAndAskIfReturnButtonPressed(){
     removeElements();
     isElementsOnThisSceenLoaded = false;
   });
-}
-
-function createTable(){
-
-  let tbl = index.createElement("table");
-  console.log(tbl);
 }

@@ -16,10 +16,10 @@ let isElementsOnThisSceenLoaded = false;
 let returnButton, toxicityButton, qnaButton, answerButton;
 const threshold = 0.6;
 let predictions;
-let tbl
+let tbl;
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
-let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"]
+let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
 
 class Bots{
   constructor(){
@@ -141,8 +141,7 @@ function draw() {
   }
 
   else if (state === "toxicity") {
-    background("darkgreen");
-
+    background(color(180, 42, 32));
     if (!toxicityHasLoaded){
       toxicityNewBot = new Bots();
       toxicityNewBot.loadToxicityModel();
@@ -159,7 +158,7 @@ function draw() {
       tbl.child(tr);
       for (let word of otherwordlist){
         theValue = createElement("th", `(${word}):`);
-        theValue.addClass("title")
+        theValue.addClass("title");
         tr.child(theValue);
       }
 
@@ -172,7 +171,7 @@ function draw() {
           }
           else{
             theValue = createElement("td", "waiting input");
-            theValue.addClass("numbers")
+            theValue.addClass("numbers");
           }
           tr.child(theValue);
         }
@@ -203,7 +202,7 @@ function draw() {
         }
 
         for (let j = 2; j < 4; j++){
-          tbl.elt.children[i].children[j].innerHTML = `${(predictions[i-1].results[0].probabilities[j-2] * 100).toFixed(1)}%`
+          tbl.elt.children[i].children[j].innerHTML = `${(predictions[i-1].results[0].probabilities[j-2] * 100).toFixed(1)}%`;
         }
       }
     }

@@ -56,7 +56,11 @@ td {
   width: 30%;
   height: 20%;
   opacity: 60%;
-  background-color: aquamarine;
+  background-color: aliceblue;
+  font-size: 15px;
+  color: blueviolet;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  outline: none;
 }
 
 .startScreenButtons {

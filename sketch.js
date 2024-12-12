@@ -19,6 +19,7 @@ let predictions;
 let tbl
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
+let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"]
 
 class Bots{
   constructor(){
@@ -154,6 +155,14 @@ function draw() {
 
       tbl = createElement("table");
 
+      let tr = createElement("tr");
+      tbl.child(tr);
+      for (let word of otherwordlist){
+        theValue = createElement("th", `(${word}):`);
+        theValue.addClass("title")
+        tr.child(theValue);
+      }
+
       for (let word of wordList){
         let tr = createElement("tr");
         tbl.child(tr);
@@ -162,20 +171,18 @@ function draw() {
             theValue = createElement("th", word);
           }
           else{
-            theValue = createElement("td", "waiting for input");
+            theValue = createElement("td", "waiting input");
             theValue.addClass("numbers")
           }
           tr.child(theValue);
         }
       }
 
-      // createTable();
-
       userPassage = createElement("textarea", "input a passage");
       userPassage.elt.id = "toxicityPassage";
 
       answerButton = createButton('click for answer');
-      answerButton.elt.id = "qnaButton";
+      answerButton.elt.id = "toxicityButtion";
       answerButton.mousePressed(() => {
         if (toxicityNewBot.isThisModelLoaded){
           toxicityNewBot.passage = userPassage.elt.value;
@@ -187,32 +194,28 @@ function draw() {
     }
 
     try{
-      for (let i = 0; i < 7; i++){
-        if (predictions[i].results[0].match === null){
-          predictions[i].results[0].match = "not confident to make a choice";
+      for (let i = 1; i < tbl.elt.childElementCount; i++){
+        if (predictions[i-1].results[0].match === null){
+          tbl.elt.children[i].children[1].innerHTML = "not confident to make choice";
         }
-        text(`Is it a ${wordList[i]}: ${predictions[i].results[0].match}` , width/2, height/3 + i * 20);
-        for (let j = 0; j < 2; j++){
-          text(predictions[i].results[0].probabilities[j], width/2 + j * 200, height/1.5 + i * 20);
+        else{
+          tbl.elt.children[i].children[1].innerHTML = predictions[i-1].results[0].match;
+        }
+
+        for (let j = 2; j < 4; j++){
+          tbl.elt.children[i].children[j].innerHTML = `${(predictions[i-1].results[0].probabilities[j-2] * 100).toFixed(1)}%`
         }
       }
     }
 
     catch{
       if (toxicityNewBot.isThisModelLoaded){
-        text("it is loaded", width/2, height/2);
+        text("it is loaded", width/4, height/2.2);
       }
       else{
-        text("wait to load", width/2, height/2);
+        text("wait to load", width/4, height/2.2);
       }
     }
-
-    // predictions[0].results[0].probabilities[0];
-    // 0.9982390403747559
-    // predictions[0].results[0].probabilities[1];
-    // 0.0017609137576073408
-    // predictions[0].results[0].match
-    // false
   }
 }
 

@@ -17,6 +17,7 @@ let returnButton, toxicityButton, qnaButton, answerButton;
 const threshold = 0.6;
 let predictions;
 let tbl;
+let div;
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
@@ -214,6 +215,14 @@ function draw() {
       else{
         text("wait to load", width/4, height/2.2);
       }
+    }
+  }
+  else if (state === "dog"){
+    background(50);
+    if (!isElementsOnThisSceenLoaded){
+      div = createElement("div");
+      div.elt.id = "test";
+      isElementsOnThisSceenLoaded = true;
     }
   }
 }

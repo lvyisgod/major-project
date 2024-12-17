@@ -13,7 +13,7 @@ let answer;
 let state = "startScreen";
 let qnaHasLoaded = false, toxicityHasLoaded = false;
 let isElementsOnThisSceenLoaded = false;
-let returnButton, toxicityButton, qnaButton, answerButton;
+let returnButton, toxicityButton, qnaButton, graphButtion, answerButton;
 const threshold = 0.6;
 let predictions;
 let tbl;
@@ -72,12 +72,22 @@ function draw() {
       toxicityButton = createButton("Toxicity Detection");
       toxicityButton.elt.id = "startToxicitybutton";
       toxicityButton.addClass("startScreenButtons");
+
+      graphButtion = createButton("Graph");
+      graphButtion.elt.id = "startGraphButton";
+      graphButtion.addClass("startScreenButtons");
       
       isElementsOnThisSceenLoaded = true;
     }
 
     qnaButton.mousePressed(() => {
       state = "qnaScreen";
+      removeElements();
+      isElementsOnThisSceenLoaded = false;
+    });
+
+    graphButtion.mousePressed(() => {
+      state = "graph";
       removeElements();
       isElementsOnThisSceenLoaded = false;
     });
@@ -217,12 +227,34 @@ function draw() {
       }
     }
   }
-  else if (state === "dog"){
+
+  else if (state === "graph"){
     background(50);
+    createAndAskIfReturnButtonPressed();
+
     if (!isElementsOnThisSceenLoaded){
       div = createElement("div");
       div.elt.id = "test";
       isElementsOnThisSceenLoaded = true;
+
+      answerButton = createButton('click for answer');
+      answerButton.elt.id = "toxicityButtion";
+
+      answerButton.mousePressed(() => {
+
+        let exp = "x**3";
+
+        const xValues = [];
+        const yValues = [];
+        for (let x = -10; x <= 10; x += 0.1) {
+          xValues.push(x);
+          yValues.push(eval(exp));
+        }
+        
+        const data = [{x:xValues, y:yValues, mode:"lines"}];
+        const layout = {title: "y = " + exp, yaxis:{autorange: false}};
+        Plotly.newPlot("test", data, layout);
+      });
     }
   }
 }

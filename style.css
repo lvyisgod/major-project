@@ -81,6 +81,11 @@ td {
   background-color: lightcoral;
 }
 
+#startGraphButton{
+  left: 55%;
+  top: 40%;
+}
+
 #startToxicitybutton {
   left: 40%;
   top: 40%;

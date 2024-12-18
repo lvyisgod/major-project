@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 let isAnswerLoaded;
-let qnaNewBot, toxicityNewBot;
+let qnaNewBot, toxicityNewBot, graphBot;
 let userPassage;
 let userQuestion;
 let answer;
@@ -19,8 +19,46 @@ let predictions;
 let tbl;
 let div;
 
+
+let data, layout;
+
+let userYMin, userYMax, userXMin, userXMax, userFunction, userStep;
+
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
+
+class Graph{
+  constructor(){
+    this.function = undefined;
+    this.unchangedFunction = undefined;
+  }
+
+  mathToComputerNotation(){
+    this.unchangedFunction = this.function;
+
+    this.function = this.function.replaceAll("sin", "Math.sin");
+    this.function = this.function.replaceAll("tan", "Math.tan");
+    this.function = this.function.replaceAll("cos", "Math.cos");
+    this.function = this.function.replaceAll("log", "Math.log");
+    this.function = this.function.replaceAll("sec", "findSecant");
+    this.function = this.function.replaceAll("cot", "findCotangent");
+    this.function = this.function.replaceAll("csc", "findCosecant");
+    this.function = this.function.replaceAll("^", "**");
+    this.function = this.function.replaceAll("pi", "Math.PI");
+  }
+
+  graphFunction(){
+    let xValues = [];
+    let yValues = [];
+    for (let x = -400; x < 400; x += 0.4){
+      xValues.push(x);
+      yValues.push(eval(this.function));
+    }
+    
+    data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
+    layout = {title: "f(x) = " + this.unchangedFunction, yaxis:{autorange: false, range: [-100, 100]}, xaxis:{autorange: false, range: [-100, 100]}};
+  }
+}
 
 class Bots{
   constructor(){
@@ -59,6 +97,8 @@ function setup() {
 }
 
 function draw() {
+  textSize(15);
+  fill('white');
   textAlign(CENTER, CENTER);
   resizeCanvas(windowWidth, windowHeight);
 
@@ -127,8 +167,7 @@ function draw() {
     }
 
     background("green");
-    textSize(15);
-    fill('white');
+
 
 
     try {
@@ -229,33 +268,33 @@ function draw() {
   }
 
   else if (state === "graph"){
-    background(50);
+    background("mediumslateblue");
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
+      graphBot = new Graph();
       div = createElement("div");
-      div.elt.id = "test";
-      isElementsOnThisSceenLoaded = true;
+      div.elt.id = "graphArea";
+
+      userFunction = createElement("textarea", "Function");
+      userFunction.elt.id = "userFunction";
 
       answerButton = createButton('click for answer');
-      answerButton.elt.id = "toxicityButtion";
+      answerButton.elt.id = "graphButton";
 
       answerButton.mousePressed(() => {
+        graphBot.function = userFunction.elt.value;
 
-        let exp = "x**3";
+        graphBot.mathToComputerNotation();
 
-        const xValues = [];
-        const yValues = [];
-        for (let x = -10; x <= 10; x += 0.1) {
-          xValues.push(x);
-          yValues.push(eval(exp));
-        }
-        
-        const data = [{x:xValues, y:yValues, mode:"lines"}];
-        const layout = {title: "y = " + exp, yaxis:{autorange: false}};
-        Plotly.newPlot("test", data, layout);
+        graphBot.graphFunction();
+
+        Plotly.newPlot("graphArea", data, layout);
       });
+      isElementsOnThisSceenLoaded = true;
     }
+
+    text("Input a function to graph", width/2, height/8.5)
   }
 }
 
@@ -269,4 +308,16 @@ function createAndAskIfReturnButtonPressed(){
     removeElements();
     isElementsOnThisSceenLoaded = false;
   });
+}
+
+function findCotangent(num){
+  return Math.cos(num) / Math.sin(num);
+}
+
+function findSecant(num){
+  return 1 / Math.cos(num);
+}
+
+function findCosecant(num){
+  return 1 / Math.sin(num);
 }

@@ -294,7 +294,7 @@ function draw() {
       isElementsOnThisSceenLoaded = true;
     }
 
-    text("Input a function to graph", width/2, height/8.5)
+    text("Input a function to graph", width/2, height/8.5);
   }
 }
 

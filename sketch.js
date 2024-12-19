@@ -23,11 +23,13 @@ let div;
 let data, layout;
 
 let userFunction, userStep, userXMin, userYmin, userXMax, userYMax;
+let userXTable, userYTable;
+let buttonSwap;
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
 
-let graphingState = "function"
+let graphingState = "function";
 
 class Graph{
   constructor(){
@@ -38,6 +40,8 @@ class Graph{
     this.XMin = undefined;
     this.YMax = undefined;
     this.XMax = undefined;
+    this.XTable = undefined;
+    this.YTable = undefined;
   }
 
   mathToComputerNotation(){
@@ -60,13 +64,31 @@ class Graph{
   graphFunction(){
     let xValues = [];
     let yValues = [];
-    for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
-      xValues.push(x);
-      yValues.push(eval(this.function));
-    }
+    let titleSting;
+
+    if (graphingState === "function"){
+      for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
+        xValues.push(x);
+        yValues.push(eval(this.function));
+      }
     
-    data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
-    layout = {title: "f(x) = " + this.unchangedFunction, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
+      data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
+      titleSting = "f(x) = ";
+    }
+
+    else if (graphingState === "table"){
+      this.unchangedFunction = "";
+
+      for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
+        xValues.push(x);
+        yValues.push(y);
+      }
+    
+      data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
+      titleSting = "Table";
+    }
+
+    layout = {title: titleSting + this.unchangedFunction, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
   }
 }
 
@@ -282,36 +304,52 @@ function draw() {
     createAndAskIfReturnButtonPressed();
 
     if (!isElementsOnThisSceenLoaded){
+      buttonSwap = createButton("swap to table graphing");
+      buttonSwap.elt.id = "graphingSwap";
       graphBot = new Graph();
       div = createElement("div");
       div.elt.id = "graphArea";
 
+      userXMin = createInput("X Min", "number");
+      userXMin.elt.id = "userXMin";
+      userXMin.addClass("graphInputNumbers");
+
+      userYmin = createInput("Y min", "number");
+      userYmin.elt.id = "userYmin";
+      userYmin.addClass("graphInputNumbers");
+
+      userXMax = createInput("X Max", "number");
+      userXMax.elt.id = "userXMax";
+      userXMax.addClass("graphInputNumbers");
+
+      userYMax = createInput("Y Max", "number");
+      userYMax.elt.id = "userYMax";
+      userYMax.addClass("graphInputNumbers");
+
+      userStep = createInput("Step Size", "number");
+      userStep.elt.id = "userStep";
+      userStep.addClass("graphInputNumbers");
+
+      answerButton = createButton('click for answer');
+      answerButton.elt.id = "graphButton";
+
+      if (graphingState === "tableGraphing"){
+        buttonSwap.mousePressed(() => {
+          removeElements();
+          graphingState = "function";
+          isElementsOnThisSceenLoaded = false;
+        });
+      }
+
       if (graphingState === "function"){
+        buttonSwap.mousePressed(() => {
+          removeElements();
+          graphingState = "tableGraphing";
+          isElementsOnThisSceenLoaded = false;
+        });
+
         userFunction = createElement("textarea", "Function");
         userFunction.elt.id = "userFunction";
-
-        userXMin = createInput("X Min", "number");
-        userXMin.elt.id = "userXMin";
-        userXMin.addClass("graphInputNumbers")
-
-        userYmin = createInput("Y min", "number");
-        userYmin.elt.id = "userYmin";
-        userYmin.addClass("graphInputNumbers")
-
-        userXMax = createInput("X Max", "number");
-        userXMax.elt.id = "userXMax";
-        userXMax.addClass("graphInputNumbers")
-
-        userYMax = createInput("Y Max", "number");
-        userYMax.elt.id = "userYMax";
-        userYMax.addClass("graphInputNumbers")
-
-        userStep = createInput("Step Size", "number");
-        userStep.elt.id = "userStep";
-        userStep.addClass("graphInputNumbers")
-
-        answerButton = createButton('click for answer' );
-        answerButton.elt.id = "graphButton";
       }
 
       answerButton.mousePressed(() => {
@@ -334,14 +372,14 @@ function draw() {
       isElementsOnThisSceenLoaded = true;
     }
 
+    text("X Min", width/5, height/5);
+    text("Y Min", width/2.85, height/5);
+    text("X Max", width/2, height/5);
+    text("Y Max", width/1.54, height/5);
+    text("Step Size", width/1.25, height/5);
+
     if (graphingState === "function"){
       text("Input a function to graph", width/2, height/8.5);
-
-      text("X Min", width/5, height/5)
-      text("Y Min", width/2.85, height/5)
-      text("X Max", width/2, height/5)
-      text("Y Max", width/1.54, height/5)
-      text("Step Size", width/1.25, height/5)
     }
   }
 }

@@ -193,7 +193,7 @@ td {
   transform: scale(0.95);
 }
 
-#userFunction{
+#userFunction {
   left: 50%;
   top: 15%;
   resize: none;
@@ -205,4 +205,35 @@ td {
   overflow: hidden;
   background-color: lightblue;
   opacity: 40%;
+}
+
+.graphInputNumbers {
+  position: absolute;
+  background-color: lightblue;
+  transform: translate(-50%, -50%);
+  outline: none;
+  overflow: hidden;
+  opacity: 60%;
+  border: none;
+  top: 22.5%;
+}
+
+#userXMin {
+  left: 20%;
+}
+
+#userYmin {
+  left: 35%;
+}
+
+#userXMax {
+  left: 50%;
+}
+
+#userYMax {
+  left: 65%;
+}
+
+#userStep {
+  left: 80%;
 }

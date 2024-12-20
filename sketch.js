@@ -65,6 +65,7 @@ class Graph{
     let xValues = [];
     let yValues = [];
     let titleSting;
+    let dataMode;
 
     if (graphingState === "function"){
       for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
@@ -72,23 +73,23 @@ class Graph{
         yValues.push(eval(this.function));
       }
     
-      data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
-      titleSting = "f(x) = ";
+      titleSting = "f(x) = " + this.unchangedFunction;
+      dataMode = 'lines+markers';
     }
 
-    else if (graphingState === "table"){
-      this.unchangedFunction = "";
-
-      for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
-        xValues.push(x);
-        yValues.push(y);
+    else if (graphingState === "tableGraphing"){
+      for (let i = 0; i < this.XTable.length; i++){
+        xValues.push(Number(this.XTable[i]));
+        yValues.push(Number(this.YTable[i]));
       }
     
-      data = [{x:xValues, y:yValues, mode: 'lines+markers'}];
+      
       titleSting = "Table";
+      dataMode = "markers";
     }
 
-    layout = {title: titleSting + this.unchangedFunction, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
+    data = [{x:xValues, y:yValues, mode: dataMode}];
+    layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
   }
 }
 
@@ -303,8 +304,8 @@ function draw() {
     background("mediumslateblue");
     createAndAskIfReturnButtonPressed();
 
-    if (!isElementsOnThisSceenLoaded){
-      buttonSwap = createButton("swap to table graphing");
+    if (!isElementsOnThisSceenLoaded){    
+      buttonSwap = createButton();
       buttonSwap.elt.id = "graphingSwap";
       graphBot = new Graph();
       div = createElement("div");
@@ -326,14 +327,19 @@ function draw() {
       userYMax.elt.id = "userYMax";
       userYMax.addClass("graphInputNumbers");
 
-      userStep = createInput("Step Size", "number");
-      userStep.elt.id = "userStep";
-      userStep.addClass("graphInputNumbers");
-
       answerButton = createButton('click for answer');
       answerButton.elt.id = "graphButton";
 
       if (graphingState === "tableGraphing"){
+        userXTable = createElement("textarea")
+        userXTable.elt.id = "XTable"
+        userXTable.addClass("userTable")
+
+        userYTable = createElement("textarea")
+        userYTable.elt.id = "YTable"
+        userYTable.addClass("userTable")
+
+        buttonSwap.elt.innerHTML = 'swap to function graphing';
         buttonSwap.mousePressed(() => {
           removeElements();
           graphingState = "function";
@@ -342,28 +348,40 @@ function draw() {
       }
 
       if (graphingState === "function"){
+        userFunction = createElement("textarea", "Function");
+        userFunction.elt.id = "userFunction";
+
+        userStep = createInput("Step Size", "number");
+        userStep.elt.id = "userStep";
+        userStep.addClass("graphInputNumbers");
+
+        buttonSwap.elt.innerHTML = 'swap to table graphing';
         buttonSwap.mousePressed(() => {
           removeElements();
           graphingState = "tableGraphing";
           isElementsOnThisSceenLoaded = false;
         });
-
-        userFunction = createElement("textarea", "Function");
-        userFunction.elt.id = "userFunction";
       }
 
       answerButton.mousePressed(() => {
+
         if (graphingState === "function"){
           graphBot.step = Number(userStep.elt.value);
-          graphBot.XMin = Number(userXMin.elt.value);
-          graphBot.YMin = Number(userYmin.elt.value);
-          graphBot.XMax = Number(userXMax.elt.value);
-          graphBot.YMax = Number(userYMax.elt.value);
 
           graphBot.function = userFunction.elt.value;
 
           graphBot.mathToComputerNotation();
         }
+
+        else if (graphingState === "tableGraphing"){
+          graphBot.XTable = userXTable.elt.value.split(", ");
+          graphBot.YTable = userYTable.elt.value.split(", ");
+        }
+
+        graphBot.XMin = Number(userXMin.elt.value);
+        graphBot.YMin = Number(userYmin.elt.value);
+        graphBot.XMax = Number(userXMax.elt.value);
+        graphBot.YMax = Number(userYMax.elt.value);
 
         graphBot.graphFunction();
 
@@ -376,10 +394,15 @@ function draw() {
     text("Y Min", width/2.85, height/5);
     text("X Max", width/2, height/5);
     text("Y Max", width/1.54, height/5);
-    text("Step Size", width/1.25, height/5);
 
     if (graphingState === "function"){
       text("Input a function to graph", width/2, height/8.5);
+      text("Step Size", width/1.25, height/5);
+    }
+
+    else if (graphingState === "tableGraphing"){
+      text("x Table", width/2.5, height/10);
+      text("y Table", width/1.68, height/10);
     }
   }
 }

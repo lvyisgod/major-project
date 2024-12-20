@@ -7,6 +7,20 @@ canvas {
   display: block;
 }
 
+input {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  outline: none;
+  border: none;
+}
+
+textarea {
+  outline: none;
+  resize: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
 div {
   position: absolute;
   left: 21%;
@@ -54,9 +68,6 @@ td {
 }
 
 #toxicityPassage {
-  resize: none;
-  position: absolute;
-  transform: translate(-50%, -50%);
   left: 50%;
   top: 27%;
   width: 30%;
@@ -66,7 +77,6 @@ td {
   font-size: 15px;
   color: blueviolet;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
-  outline: none;
 }
 
 .startScreenButtons {
@@ -111,7 +121,6 @@ td {
 .qnaInputs {
   background-color: pink;
   position: absolute;
-  outline: none;
   resize: none;
   font-size: 15px;
   color: blueviolet;
@@ -199,7 +208,6 @@ td {
   resize: none;
   transform: translate(-50%, -50%);
   position: absolute;
-  outline: none;
   width: 30%;
   height: 3%;
   overflow: hidden;
@@ -208,13 +216,8 @@ td {
 }
 
 .graphInputNumbers {
-  position: absolute;
   background-color: lightblue;
-  transform: translate(-50%, -50%);
-  outline: none;
-  overflow: hidden;
   opacity: 60%;
-  border: none;
   top: 22.5%;
 }
 
@@ -241,4 +244,20 @@ td {
 #graphingSwap {
   left: 90%;
   top: 60%;
+}
+
+.userTable {
+  background-color: lightpink;
+  top: 12.5%;
+  width: 15%;
+  height: 3%;
+  opacity: 50%;
+}
+
+#XTable {
+  left: 40%;
+}
+
+#YTable {
+  left: 60%;
 }

@@ -331,13 +331,13 @@ function draw() {
       answerButton.elt.id = "graphButton";
 
       if (graphingState === "tableGraphing"){
-        userXTable = createElement("textarea")
-        userXTable.elt.id = "XTable"
-        userXTable.addClass("userTable")
+        userXTable = createElement("textarea");
+        userXTable.elt.id = "XTable";
+        userXTable.addClass("userTable");
 
-        userYTable = createElement("textarea")
-        userYTable.elt.id = "YTable"
-        userYTable.addClass("userTable")
+        userYTable = createElement("textarea");
+        userYTable.elt.id = "YTable";
+        userYTable.addClass("userTable");
 
         buttonSwap.elt.innerHTML = 'swap to function graphing';
         buttonSwap.mousePressed(() => {
@@ -429,4 +429,33 @@ function findSecant(num){
 
 function findCosecant(num){
   return 1 / Math.sin(num);
+}
+
+function linearRegression(){
+  let theXvalues = [];
+  let values = [];
+  let Xcounter = 0;
+  let counter = 0;
+  let avgX = 0;
+  let avgY = 0;
+
+  for (let i = 0; i < graphBot.XTable.length; i++){
+    avgX += Number(graphBot.XTable[i]);
+    avgY += Number(graphBot.YTable[i]);
+  }
+  avgX = avgX / graphBot.XTable.length;
+  avgY = avgY / graphBot.YTable.length;
+  
+  for (let i = 0; i < graphBot.XTable.length; i++){
+    values.push((avgX - Number(graphBot.XTable[i]))* (avgY- Number(graphBot.YTable[i])));
+    theXvalues.push((avgX - Number(graphBot.XTable[i]))** 2);
+  }
+  
+  for (let i = 0; i < values.length; i++){
+    counter += values[i];
+    Xcounter += theXvalues[i];
+  }
+  
+  b = counter / Xcounter;
+  a = b * avgX - avgY;
 }

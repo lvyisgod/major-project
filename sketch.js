@@ -30,10 +30,12 @@ let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sex
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
 
 let graphingState = "function";
-let a;
-let b;
+
 let linearRegressionButton;
 let doLinearRegression = false; 
+
+let quadraticRegressionButton;
+let doQuadraticRegression = false; 
 
 class Graph{
   constructor(){
@@ -91,22 +93,29 @@ class Graph{
       titleSting = "Table";
       dataMode = "markers";
     }
+
+    data = [{x:xValues, y:yValues, mode: dataMode}];
+
     if (doLinearRegression){
       let linearXValues = [];
       let linearYValues = []
 
-      linearRegression();
+      for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
+        linearXValues.push(x);
+        linearYValues.push(linearRegression().B * x - linearRegression().A);
+      }
+      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${linearRegression().B.toFixed(3)}x - ${linearRegression().A.toFixed(3)}`};
+    }
+
+    if (doQuadraticRegression){
+      let linearXValues = [];
+      let linearYValues = []
 
       for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
         linearXValues.push(x);
-        linearYValues.push(b * x - a);
+        linearYValues.push(quadraticRegression().A * x ** 2 + quadraticRegression().B * x + quadraticRegression().C);
       }
-
-      data = [{x:xValues, y:yValues, mode: dataMode}, {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${b.toFixed(3)}x - ${a.toFixed(3)}`}];
-    }
-
-    else {
-      data = [{x:xValues, y:yValues, mode: dataMode}];
+      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ax2 + bx + c`};
     }
 
     layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
@@ -363,6 +372,18 @@ function draw() {
            doLinearRegression = !doLinearRegression
         })
 
+        quadraticRegressionButton = createButton("quadratic regression off")
+        quadraticRegressionButton.elt.id = "quadraticRegressionButton";
+        quadraticRegressionButton.mousePressed(() => {
+          if (!doQuadraticRegression){
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression on"
+          }
+          else{
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression off"
+          }
+          doQuadraticRegression = !doQuadraticRegression
+        })
+
         userXTable = createElement("textarea");
         userXTable.elt.id = "XTable";
         userXTable.addClass("userTable");
@@ -471,6 +492,8 @@ function linearRegression(){
   let counter = 0;
   let avgX = 0;
   let avgY = 0;
+  let a;
+  let b;
 
   for (let i = 0; i < graphBot.XTable.length; i++){
     avgX += Number(graphBot.XTable[i]);
@@ -478,17 +501,61 @@ function linearRegression(){
   }
   avgX = avgX / graphBot.XTable.length;
   avgY = avgY / graphBot.YTable.length;
-
+  
   for (let i = 0; i < graphBot.XTable.length; i++){
     values.push((avgX - Number(graphBot.XTable[i]))* (avgY- Number(graphBot.YTable[i])));
     theXvalues.push((avgX - Number(graphBot.XTable[i]))** 2);
   }
-
+  
   for (let i = 0; i < values.length; i++){
     counter += values[i];
     Xcounter += theXvalues[i];
   }
-
+  
   b = counter / Xcounter;
   a = b * avgX - avgY;
+
+  return {A: a, B: b};
+}
+
+function quadraticRegression(){
+  let a = 0;
+  let b = 0;
+  let c = 0;
+  let x = 0;
+  let y = 0;
+  let x2 = 0;
+  let x3 = 0;
+  let x4 = 0;
+  let xy = 0;
+  let x2y = 0;
+
+  
+  let SigXX = 0;
+  let SigXY = 0;
+  let SigXX2 = 0;
+  let SigX2Y = 0;
+  let SigX2X2 = 0;
+
+  for (let i = 0; i < graphBot.XTable.length; i++){
+    x += Number(graphBot.XTable[i]);
+    y += Number(graphBot.YTable[i]);
+    x2 += Number(graphBot.XTable[i]) ** 2;
+    x3 += Number(graphBot.XTable[i]) ** 3;
+    x4 += Number(graphBot.XTable[i]) ** 4;
+    xy += Number(graphBot.XTable[i]) * Number(graphBot.YTable[i]);
+    x2y += Number(graphBot.XTable[i]) ** 2 * Number(graphBot.YTable[i]);
+  }
+  
+  SigXX = x2 - x**2 / graphBot.XTable.length;
+  SigXY = xy - x * y / graphBot.XTable.length;
+  SigXX2 = x3 - x2 * x / graphBot.XTable.length;
+  SigX2Y = x2y - x2 * y / graphBot.XTable.length;
+  SigX2X2 = x4 - x2 ** 2 / graphBot.XTable.length;
+  
+  a = (SigX2Y * SigXX - SigXY * SigXX2) / (SigXX * SigX2X2 - SigXX2**2);
+  b = (SigXY * SigX2X2 - SigX2Y * SigXX2) / (SigXX * SigX2X2 - SigXX2**2);
+  c = y/graphBot.XTable.length - b * (x / graphBot.XTable.length) - a * (x2/graphBot.XTable.length);
+
+  return {A: a, B: b, C: c, XX: SigXY};
 }

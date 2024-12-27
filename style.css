@@ -261,3 +261,8 @@ td {
 #YTable {
   left: 60%;
 }
+
+#linearRegressionButton {
+  left: 80%;
+  top: 20%;
+}

@@ -30,6 +30,10 @@ let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sex
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
 
 let graphingState = "function";
+let a;
+let b;
+let linearRegressionButton;
+let doLinearRegression = false; 
 
 class Graph{
   constructor(){
@@ -87,8 +91,24 @@ class Graph{
       titleSting = "Table";
       dataMode = "markers";
     }
+    if (doLinearRegression){
+      let linearXValues = [];
+      let linearYValues = []
 
-    data = [{x:xValues, y:yValues, mode: dataMode}];
+      linearRegression();
+
+      for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
+        linearXValues.push(x);
+        linearYValues.push(b * x - a);
+      }
+
+      data = [{x:xValues, y:yValues, mode: dataMode}, {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${b.toFixed(3)}x - ${a.toFixed(3)}`}];
+    }
+
+    else {
+      data = [{x:xValues, y:yValues, mode: dataMode}];
+    }
+
     layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
   }
 }
@@ -331,6 +351,18 @@ function draw() {
       answerButton.elt.id = "graphButton";
 
       if (graphingState === "tableGraphing"){
+        linearRegressionButton = createButton("linear regression off")
+        linearRegressionButton.elt.id = "linearRegressionButton";
+        linearRegressionButton.mousePressed(() => {
+          if (!doLinearRegression){
+            linearRegressionButton.elt.innerHTML = "linear regression on"
+          }
+          else{
+            linearRegressionButton.elt.innerHTML = "linear regression off"
+          }
+           doLinearRegression = !doLinearRegression
+        })
+
         userXTable = createElement("textarea");
         userXTable.elt.id = "XTable";
         userXTable.addClass("userTable");
@@ -348,6 +380,7 @@ function draw() {
       }
 
       if (graphingState === "function"){
+
         userFunction = createElement("textarea", "Function");
         userFunction.elt.id = "userFunction";
 
@@ -445,17 +478,17 @@ function linearRegression(){
   }
   avgX = avgX / graphBot.XTable.length;
   avgY = avgY / graphBot.YTable.length;
-  
+
   for (let i = 0; i < graphBot.XTable.length; i++){
     values.push((avgX - Number(graphBot.XTable[i]))* (avgY- Number(graphBot.YTable[i])));
     theXvalues.push((avgX - Number(graphBot.XTable[i]))** 2);
   }
-  
+
   for (let i = 0; i < values.length; i++){
     counter += values[i];
     Xcounter += theXvalues[i];
   }
-  
+
   b = counter / Xcounter;
   a = b * avgX - avgY;
 }

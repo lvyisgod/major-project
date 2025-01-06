@@ -98,24 +98,24 @@ class Graph{
 
     if (doLinearRegression){
       let linearXValues = [];
-      let linearYValues = []
+      let linearYValues = [];
 
       for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
         linearXValues.push(x);
         linearYValues.push(linearRegression().B * x - linearRegression().A);
       }
-      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${linearRegression().B.toFixed(3)}x - ${linearRegression().A.toFixed(3)}`};
+      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${linearRegression().B.toFixed(2)}x - ${linearRegression().A.toFixed(2)}`};
     }
 
     if (doQuadraticRegression){
       let linearXValues = [];
-      let linearYValues = []
+      let linearYValues = [];
 
       for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
         linearXValues.push(x);
         linearYValues.push(quadraticRegression().A * x ** 2 + quadraticRegression().B * x + quadraticRegression().C);
       }
-      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ax2 + bx + c`};
+      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${quadraticRegression().A.toFixed(2)}x^2 + ${quadraticRegression().B.toFixed(2)}x + ${quadraticRegression().C.toFixed(2)}`};
     }
 
     layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
@@ -360,29 +360,29 @@ function draw() {
       answerButton.elt.id = "graphButton";
 
       if (graphingState === "tableGraphing"){
-        linearRegressionButton = createButton("linear regression off")
+        linearRegressionButton = createButton("linear regression off");
         linearRegressionButton.elt.id = "linearRegressionButton";
         linearRegressionButton.mousePressed(() => {
           if (!doLinearRegression){
-            linearRegressionButton.elt.innerHTML = "linear regression on"
+            linearRegressionButton.elt.innerHTML = "linear regression on";
           }
           else{
-            linearRegressionButton.elt.innerHTML = "linear regression off"
+            linearRegressionButton.elt.innerHTML = "linear regression off";
           }
-           doLinearRegression = !doLinearRegression
-        })
+          doLinearRegression = !doLinearRegression;
+        });
 
-        quadraticRegressionButton = createButton("quadratic regression off")
+        quadraticRegressionButton = createButton("quadratic regression off");
         quadraticRegressionButton.elt.id = "quadraticRegressionButton";
         quadraticRegressionButton.mousePressed(() => {
           if (!doQuadraticRegression){
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression on"
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression on";
           }
           else{
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression off"
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression off";
           }
-          doQuadraticRegression = !doQuadraticRegression
-        })
+          doQuadraticRegression = !doQuadraticRegression;
+        });
 
         userXTable = createElement("textarea");
         userXTable.elt.id = "XTable";

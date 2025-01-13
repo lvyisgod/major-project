@@ -559,3 +559,36 @@ function quadraticRegression(){
 
   return {A: a, B: b, C: c, XX: SigXY};
 }
+
+// matrix = [[1, 2], [4, 5], [1, 5]];
+// Tmatrix = [];
+
+function tranposeMatrix(){
+  for (let y = 0; y < matrix.length; y++){
+    for (let x = 0; x < matrix[y].length; x++){
+      if (Tmatrix.length < matrix[0].length){
+        Tmatrix.push([]);
+      }
+      Tmatrix[x].push(matrix[y][x]);
+    }
+  }
+
+  console.log(Tmatrix);
+}
+
+function matrixMultication(){
+  let matrix = [3, 4, 2];
+  let Tmatrix = [[13, 9, 7, 15], [8, 7, 4, 6], [6, 4, 0, 3]];
+
+  let productMatrix = [];
+  if (matrix[0].length === Tmatrix.length){
+    console.log(matrix, Tmatrix);
+    for (let y = 0; y < matrix.length; y++){
+      productMatrix.push([]);
+      for (let x = 0; x < Tmatrix[0].length; x++){
+        productMatrix[y].push([]);
+      }
+    }
+    console.log(productMatrix);
+  }
+}

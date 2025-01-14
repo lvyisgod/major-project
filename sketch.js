@@ -576,17 +576,22 @@ function tranposeMatrix(){
   console.log(Tmatrix);
 }
 
+let matrix = [3, 4, 2];
+let Tmatrix = [[13, 9, 7, 15], [8, 7, 4, 6], [6, 4, 0, 3]];
+
+
 function matrixMultication(){
-  let matrix = [3, 4, 2];
-  let Tmatrix = [[13, 9, 7, 15], [8, 7, 4, 6], [6, 4, 0, 3]];
+  
 
   let productMatrix = [];
-  if (matrix[0].length === Tmatrix.length){
+
+  if (matrix[0].length === Tmatrix.length || matrix.length === Tmatrix.length){
+    console.log("pig");
     console.log(matrix, Tmatrix);
     for (let y = 0; y < matrix.length; y++){
       productMatrix.push([]);
       for (let x = 0; x < Tmatrix[0].length; x++){
-        productMatrix[y].push([]);
+        productMatrix[y].push(0);
       }
     }
     console.log(productMatrix);

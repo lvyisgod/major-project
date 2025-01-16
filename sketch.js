@@ -156,6 +156,9 @@ function preload(){
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  (async() => 
+    {thisMatrix = await import Matrix from "ml-matrix";
+  });
 }
 
 function draw() {
@@ -576,8 +579,8 @@ function tranposeMatrix(){
   console.log(Tmatrix);
 }
 
-let matrix = [3, 4, 2];
-let Tmatrix = [[13, 9, 7, 15], [8, 7, 4, 6], [6, 4, 0, 3]];
+// let matrix = [3, 4, 2];
+// let Tmatrix = [[13, 9, 7, 15],  [8, 7, 4, 6], [6, 4, 0, 3]];
 
 
 function matrixMultication(){

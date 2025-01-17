@@ -156,9 +156,6 @@ function preload(){
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  (async() => 
-    {thisMatrix = await import Matrix from "ml-matrix";
-  });
 }
 
 function draw() {

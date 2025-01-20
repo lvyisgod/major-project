@@ -150,10 +150,6 @@ class Bots{
   }
 }
 
-function preload(){
-  // bg = loadImage("robotMeme.jpg");
-}
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
@@ -560,40 +556,14 @@ function quadraticRegression(){
   return {A: a, B: b, C: c, XX: SigXY};
 }
 
-// matrix = [[1, 2], [4, 5], [1, 5]];
-// Tmatrix = [];
+let a = [0, 2, 3, 4, 5];
+let p = [];
 
-function tranposeMatrix(){
-  for (let y = 0; y < matrix.length; y++){
-    for (let x = 0; x < matrix[y].length; x++){
-      if (Tmatrix.length < matrix[0].length){
-        Tmatrix.push([]);
-      }
-      Tmatrix[x].push(matrix[y][x]);
-    }
-  }
-
-  console.log(Tmatrix);
-}
-
-// let matrix = [3, 4, 2];
-// let Tmatrix = [[13, 9, 7, 15],  [8, 7, 4, 6], [6, 4, 0, 3]];
-
-
-function matrixMultication(){
-  
-
-  let productMatrix = [];
-
-  if (matrix[0].length === Tmatrix.length || matrix.length === Tmatrix.length){
-    console.log("pig");
-    console.log(matrix, Tmatrix);
-    for (let y = 0; y < matrix.length; y++){
-      productMatrix.push([]);
-      for (let x = 0; x < Tmatrix[0].length; x++){
-        productMatrix[y].push(0);
-      }
-    }
-    console.log(productMatrix);
+for (let y = 0; y < a.length; y++){
+  p.push([]);
+  for (let x = 0; x < 4; x++){
+      p[y].push(a[y] ** x);
   }
 }
+
+let A = matrix(p);

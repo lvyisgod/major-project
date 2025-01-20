@@ -37,6 +37,9 @@ let doLinearRegression = false;
 let quadraticRegressionButton;
 let doQuadraticRegression = false; 
 
+let cubicRegressionButton;
+let doCubicRegression = false;
+
 class Graph{
   constructor(){
     this.function = undefined;
@@ -108,14 +111,25 @@ class Graph{
     }
 
     if (doQuadraticRegression){
-      let linearXValues = [];
-      let linearYValues = [];
+      let quadraticXValues = [];
+      let quadraticYValues = [];
 
       for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
-        linearXValues.push(x);
-        linearYValues.push(quadraticRegression().A * x ** 2 + quadraticRegression().B * x + quadraticRegression().C);
+        quadraticXValues.push(x);
+        quadraticYValues.push(quadraticRegression().A * x ** 2 + quadraticRegression().B * x + quadraticRegression().C);
       }
-      data[data.length] = {x:linearXValues, y:linearYValues, mode:"lines", name: `f(x) ≈ ${quadraticRegression().A.toFixed(2)}x^2 + ${quadraticRegression().B.toFixed(2)}x + ${quadraticRegression().C.toFixed(2)}`};
+      data[data.length] = {x:quadraticXValues, y:quadraticYValues, mode:"lines", name: `f(x) ≈ ${quadraticRegression().A.toFixed(2)}x^2 + ${quadraticRegression().B.toFixed(2)}x + ${quadraticRegression().C.toFixed(2)}`};
+    }
+
+    if (doCubicRegression){
+      let cubicXValues = [];
+      let cubicYValues = [];
+
+      for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
+        cubicXValues.push(x);
+        cubicYValues.push(cubicRegression().D * x ** 3 + cubicRegression().B * x ** 2 + cubicRegression().C * + cubicRegression().A)
+      }
+      data[data.length] = {x:cubicXValues, y:cubicYValues, mode:"lines", name:`f(x) ≈ ${cubicRegression().A.toFixed(2)}x^3 + ${cubicRegression().B.toFixed(2)}x^2 + ${cubicRegression().C.toFixed(2)}x + ${cubicRegression().D.toFixed(2)}`}
     }
 
     layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
@@ -380,6 +394,30 @@ function draw() {
           doQuadraticRegression = !doQuadraticRegression;
         });
 
+        quadraticRegressionButton = createButton("quadratic regression off");
+        quadraticRegressionButton.elt.id = "quadraticRegressionButton";
+        quadraticRegressionButton.mousePressed(() => {
+          if (!doQuadraticRegression){
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression on";
+          }
+          else{
+            quadraticRegressionButton.elt.innerHTML = "quadratic regression off";
+          }
+          doQuadraticRegression = !doQuadraticRegression;
+        });
+
+        cubicRegressionButton = createButton("cubic regression off");
+        cubicRegressionButton.elt.id = "cubicRegressionButton";
+        cubicRegressionButton.mousePressed(() => {
+          if (!doCubicRegression){
+            cubicRegressionButton.elt.innerHTML = "cubic regression on";
+          }
+          else{
+            cubicRegressionButton.elt.innerHTML = "cubic regression off";
+          }
+          doCubicRegression = !doCubicRegression;
+        });
+
         userXTable = createElement("textarea");
         userXTable.elt.id = "XTable";
         userXTable.addClass("userTable");
@@ -556,14 +594,37 @@ function quadraticRegression(){
   return {A: a, B: b, C: c, XX: SigXY};
 }
 
-let a = [0, 2, 3, 4, 5];
-let p = [];
+function cubicRegression(){
+  let xMatrix;
+  let yMatrix;
+  let TxMatrix;
+  let TxMatrix_XMatrix;
+  let inversedTxMatrix_XMatrix;
+  let cubicAnswer;
+  let finalCubicAnswer;
+  let cubicYTable = [];
+  let cubicXTable = [];
 
-for (let y = 0; y < a.length; y++){
-  p.push([]);
-  for (let x = 0; x < 4; x++){
-      p[y].push(a[y] ** x);
+  for (let y = 0; y < graphBot.XTable.length; y++){
+    cubicXTable.push([]);
+    cubicYTable.push([]);
+    cubicYTable[y][0] = Number(graphBot.YTable[y]);
+
+    for (let x = 0; x < 4; x++){
+    cubicXTable[y][x] = Number(graphBot.XTable[y]) ** x;
+    }
   }
-}
+  yMatrix = matrix(cubicYTable);
+  xMatrix = matrix(cubicXTable);
+  TxMatrix = matrix(xMatrix.trans());
+  TxMatrix_XMatrix = matrix(TxMatrix.prod(xMatrix));
+  inversedTxMatrix_XMatrix = matrix(TxMatrix_XMatrix.inv());
+  console.log(inversedTxMatrix_XMatrix());
 
-let A = matrix(p);
+  cubicAnswer = matrix(inversedTxMatrix_XMatrix.prod(TxMatrix))
+  console.log(cubicAnswer())
+  finalCubicAnswer = matrix(cubicAnswer.prod(yMatrix));
+  console.log(finalCubicAnswer());
+
+  return {A: finalCubicAnswer()[0][0], B: finalCubicAnswer()[1][0], C: finalCubicAnswer()[2][0], D: finalCubicAnswer()[3][0]};
+}

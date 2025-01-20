@@ -1,4 +1,4 @@
-// Project Title
+// qna, Toxicity and Graphing Bots
 // Caylixx Starr
 // Date
 //
@@ -7,40 +7,32 @@
 
 // Matrix coded copied from https://github.com/RaghavCodeHub/matrix/tree/master
 
-let isAnswerLoaded;
 let qnaNewBot, toxicityNewBot, graphBot;
-let userPassage;
-let userQuestion;
-let answer;
 let state = "startScreen";
 let qnaHasLoaded = false, toxicityHasLoaded = false;
-let isElementsOnThisSceenLoaded = false;
-let returnButton, toxicityButton, qnaButton, graphButtion, answerButton;
 const threshold = 0.6;
 let predictions;
-let tbl;
-let div;
+let graphingState = "function";
 
+// Initializaing all the elements I will use
+let isElementsOnThisSceenLoaded = false;
+let tbl, div;
+let returnButton, toxicityButton, qnaButton, graphButtion, answerButton;
+let userPassage, userQuestion, answer, isAnswerLoaded;
+let userXTable, userYTable;
+
+let linearRegressionButton, doLinearRegression = false; 
+let quadraticRegressionButton, doQuadraticRegression = false; 
+let cubicRegressionButton, doCubicRegression = false;
 
 let data, layout;
 
 let userFunction, userStep, userXMin, userYmin, userXMax, userYMax;
-let userXTable, userYTable;
-let buttonSwap;
+
+
 
 let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
 let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
-
-let graphingState = "function";
-
-let linearRegressionButton;
-let doLinearRegression = false; 
-
-let quadraticRegressionButton;
-let doQuadraticRegression = false; 
-
-let cubicRegressionButton;
-let doCubicRegression = false;
 
 class Graph{
   constructor(){
@@ -526,8 +518,8 @@ function linearRegression(){
   let values = [];
   let Xcounter = 0;
   let counter = 0;
-  let avgX = 0;
-  let avgY = 0;
+  let averageOfX = 0;
+  let averageOfY = 0;
   let a;
   let b;
 

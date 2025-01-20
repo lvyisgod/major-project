@@ -5,6 +5,8 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+// Matrix coded copied from https://github.com/RaghavCodeHub/matrix/tree/master
+
 let isAnswerLoaded;
 let qnaNewBot, toxicityNewBot, graphBot;
 let userPassage;
@@ -70,7 +72,7 @@ class Graph{
 
   }
 
-  graphFunction(){
+  graph(){
     let xValues = [];
     let yValues = [];
     let titleSting;
@@ -120,16 +122,16 @@ class Graph{
       }
       data[data.length] = {x:quadraticXValues, y:quadraticYValues, mode:"lines", name: `f(x) ≈ ${quadraticRegression().A.toFixed(2)}x^2 + ${quadraticRegression().B.toFixed(2)}x + ${quadraticRegression().C.toFixed(2)}`};
     }
-
+    
     if (doCubicRegression){
       let cubicXValues = [];
       let cubicYValues = [];
-
+  
       for (let x = this.XMin - 200; x < this.XMax + 200; x += 0.1){
         cubicXValues.push(x);
-        cubicYValues.push(cubicRegression().D * x ** 3 + cubicRegression().B * x ** 2 + cubicRegression().C * + cubicRegression().A)
+        cubicYValues.push(cubicRegression().D * x ** 3 + cubicRegression().C * x ** 2 + cubicRegression().B * x + cubicRegression().A);
       }
-      data[data.length] = {x:cubicXValues, y:cubicYValues, mode:"lines", name:`f(x) ≈ ${cubicRegression().A.toFixed(2)}x^3 + ${cubicRegression().B.toFixed(2)}x^2 + ${cubicRegression().C.toFixed(2)}x + ${cubicRegression().D.toFixed(2)}`}
+      data[data.length] = {x:cubicXValues, y:cubicYValues, mode:"lines", name:`f(x) ≈ ${cubicRegression().D.toFixed(2)}x^3 + ${cubicRegression().C.toFixed(2)}x^2 + ${cubicRegression().B.toFixed(2)}x + ${cubicRegression().AtoFixed(2)}`};
     }
 
     layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
@@ -471,7 +473,7 @@ function draw() {
         graphBot.XMax = Number(userXMax.elt.value);
         graphBot.YMax = Number(userYMax.elt.value);
 
-        graphBot.graphFunction();
+        graphBot.graph();
 
         Plotly.newPlot("graphArea", data, layout);
       });
@@ -611,7 +613,7 @@ function cubicRegression(){
     cubicYTable[y][0] = Number(graphBot.YTable[y]);
 
     for (let x = 0; x < 4; x++){
-    cubicXTable[y][x] = Number(graphBot.XTable[y]) ** x;
+      cubicXTable[y][x] = Number(graphBot.XTable[y]) ** x;
     }
   }
   yMatrix = matrix(cubicYTable);
@@ -621,8 +623,8 @@ function cubicRegression(){
   inversedTxMatrix_XMatrix = matrix(TxMatrix_XMatrix.inv());
   console.log(inversedTxMatrix_XMatrix());
 
-  cubicAnswer = matrix(inversedTxMatrix_XMatrix.prod(TxMatrix))
-  console.log(cubicAnswer())
+  cubicAnswer = matrix(inversedTxMatrix_XMatrix.prod(TxMatrix));
+  console.log(cubicAnswer());
   finalCubicAnswer = matrix(cubicAnswer.prod(yMatrix));
   console.log(finalCubicAnswer());
 

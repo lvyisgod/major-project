@@ -7,6 +7,8 @@ canvas {
   display: block;
 }
 
+
+/* for all the inputs in the project */
 input {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -14,6 +16,8 @@ input {
   border: none;
 }
 
+
+/* for all the textareas in the project */
 textarea {
   outline: none;
   resize: none;
@@ -21,16 +25,78 @@ textarea {
   transform: translate(-50%, -50%);
 }
 
-div {
-  position: absolute;
-  left: 21%;
-  top: 30%;
-}
 
+/* for all the buttons in the project */
 button {
   position: absolute;
   outline: none;
   transition-duration: 0.4s;
+}
+
+
+/* all the start screen buttons */
+.startScreenButtons {
+  width: 8.3%;
+  height: 4%;
+  top: 50%;
+  background-color: indianred;
+}
+
+.startScreenButtons:hover{
+  transform: scale(1.05);
+  background-color: lightcoral;
+}
+
+#startGraphButton{
+  left: 70%;
+}
+
+#startToxicitybutton {
+  left: 45%;
+}
+
+#startQNAButton {
+  left: 20%;
+}
+
+
+/* all the qna bot inputs */
+.qnaInputs {
+  background-color: pink;
+  position: absolute;
+  resize: none;
+  font-size: 15px;
+  color: blueviolet;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  opacity: 0.6;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#qnaUserPassage {
+  width: 50%;
+  height: 33.6%;
+  top: 25%;
+}
+
+#qnaUserQuestion {
+  width: 30%;
+  height: 5%;
+  top: 45%;
+}
+
+
+/* all the css for the toxicity bot */
+#toxicityPassage {
+  left: 50%;
+  top: 27%;
+  width: 30%;
+  height: 20%;
+  opacity: 60%;
+  background-color: aliceblue;
+  font-size: 15px;
+  color: blueviolet;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 table{
@@ -67,141 +133,61 @@ td {
   text-align: center;
 }
 
-#toxicityPassage {
-  left: 50%;
-  top: 27%;
-  width: 30%;
-  height: 20%;
-  opacity: 60%;
-  background-color: aliceblue;
-  font-size: 15px;
-  color: blueviolet;
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-}
 
-.startScreenButtons {
-  width: 8.3%;
-  height: 4%;
-  background-color: indianred;
-}
-
-.startScreenButtons:hover{
-  transform: scale(1.05);
-  background-color: lightcoral;
-}
-
-#startGraphButton{
-  left: 55%;
-  top: 40%;
-}
-
-#startToxicitybutton {
-  left: 40%;
-  top: 40%;
-}
-
-#startQNAButton {
-  left: 25%;
-  top: 40%;
-}
-
-#returnButton {
-  width: 10%;
-  height: 4%;
-  top: 7.5%;
-  left: 5%;
-  background-color: darkred;
-}
-
-#returnButton:hover {
-  background-color: crimson;
-  transform: scale(1.05);
-}
-
-.qnaInputs {
-  background-color: pink;
-  position: absolute;
-  resize: none;
-  font-size: 15px;
-  color: blueviolet;
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  opacity: 0.6;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#qnaUserPassage {
-  width: 50%;
-  height: 33.6%;
-  top: 25%;
-}
-
-#qnaUserQuestion {
-  width: 30%;
-  height: 5%;
-  top: 45%;
-}
-
-#qnaButton {
+/* all css for the answer buttons */
+.answerbutton {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   background-color: blueviolet;
   width: 10%;
   height: 5%;
   left: 45%;
+}
+
+.answerbutton:hover{
+  background-color: brown;
+  transform: scale(1.05);
+}
+
+.answerbutton:active {
+  transition-duration: 0s;
+  background-color: rgb(175, 9, 9);
+  transform: scale(0.95);
+}
+
+#qnaAnswerButton {
   top: 55%;
 }
 
-#qnaButton:hover{
-  background-color: brown;
-  transform: scale(1.05);
-}
-
-#qnaButton:active {
-  transition-duration: 0s;
-  background-color: rgb(175, 9, 9);
-  transform: scale(0.95);
-}
-
-#toxicityButtion{
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  background-color: blueviolet;
-  width: 10%;
-  height: 5%;
-  left: 45%;
+#toxicityAnswerButtion{
   top: 40%;
 }
 
-#toxicityButtion:hover{
-  background-color: brown;
-  transform: scale(1.05);
-}
-
-#toxicityButtion:active {
-  transition-duration: 0s;
-  background-color: rgb(175, 9, 9);
-  transform: scale(0.95);
-}
-
-#graphButton{
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  background-color: blueviolet;
-  width: 10%;
-  height: 5%;
-  left: 45%;
+#graphAnswerButton{
   top: 25%;
 }
 
-#graphButton:hover{
-  background-color: brown;
-  transform: scale(1.05);
+/* This is all css for the graphing bot */
+
+#graphingSwap {
+  background-color: blanchedalmond;
+  left: 80%;
+  top: 60%;
 }
 
-#graphButton:active {
-  transition-duration: 0s;
-  background-color: rgb(175, 9, 9);
-  transform: scale(0.95);
+#graphingSwap:hover{
+  background-color: rgb(235, 158, 43);
+  transform: scale(.95);
 }
 
+
+/* Plotify div */
+div {
+  position: absolute;
+  left: 19%;
+  top: 30%;
+}
+
+/* this is all the inputs for the graphing */
 #userFunction {
   left: 50%;
   top: 15%;
@@ -241,11 +227,6 @@ td {
   left: 80%;
 }
 
-#graphingSwap {
-  left: 90%;
-  top: 60%;
-}
-
 .userTable {
   background-color: lightpink;
   top: 12.5%;
@@ -262,6 +243,21 @@ td {
   left: 60%;
 }
 
+/* The regression button changes */
+.regressionButtons {
+  background-color:blanchedalmond;
+}
+
+.regressionButtons:hover {
+  background-color:rgb(238, 224, 98);
+  transform: scale(1.05);
+}
+
+.regressionButtons:active {
+  background-color:rgb(185, 174, 67);
+  transform: scale(0.98);
+}
+
 #linearRegressionButton {
   left: 80%;
   top: 20%;
@@ -275,4 +271,19 @@ td {
 #cubicRegressionButton {
   left: 80%;
   top: 30%;
+}
+
+
+/* for all the return buttons */
+#returnButton {
+  width: 10%;
+  height: 4%;
+  top: 7.5%;
+  left: 5%;
+  background-color: darkred;
+}
+
+#returnButton:hover {
+  background-color: crimson;
+  transform: scale(1.05);
 }

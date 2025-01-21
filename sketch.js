@@ -7,7 +7,8 @@
 
 // Matrix coded copied from https://github.com/RaghavCodeHub/matrix/tree/master
 
-let qnaNewBot, toxicityNewBot, graphBot;
+let img;
+let qnaBot, toxicityBot, graphBot;
 let state = "startScreen";
 let qnaHasLoaded = false, toxicityHasLoaded = false;
 const threshold = 0.6;
@@ -28,11 +29,6 @@ let cubicRegressionButton, doCubicRegression = false;
 let data, layout;
 
 let userFunction, userStep, userXMin, userYmin, userXMax, userYMax;
-
-
-
-let wordList = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
-let otherwordlist = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
 
 class Graph{
   constructor(){
@@ -65,6 +61,14 @@ class Graph{
   }
 
   graph(){
+    data = [{x:this.doTableOrFunctionGraphing().xValues, y:this.doTableOrFunctionGraphing().yValues, mode: this.doTableOrFunctionGraphing().dataMode}];
+
+    this.checkAndDoRegressions()
+
+    layout = {title: this.doTableOrFunctionGraphing().titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
+  }
+
+  doTableOrFunctionGraphing(){
     let xValues = [];
     let yValues = [];
     let titleSting;
@@ -74,25 +78,23 @@ class Graph{
       for (let x = this.XMin - 200; x < this.XMax + 200; x += this.step){
         xValues.push(x);
         yValues.push(eval(this.function));
-      }
-    
+      } 
       titleSting = "f(x) = " + this.unchangedFunction;
       dataMode = 'lines+markers';
     }
 
-    else if (graphingState === "tableGraphing"){
+    else if (graphingState === "table"){
       for (let i = 0; i < this.XTable.length; i++){
         xValues.push(Number(this.XTable[i]));
         yValues.push(Number(this.YTable[i]));
       }
-    
-      
       titleSting = "Table";
       dataMode = "markers";
     }
+    return {xValues: xValues, yValues: yValues, dataMode: dataMode, titleSting: titleSting};
+  }
 
-    data = [{x:xValues, y:yValues, mode: dataMode}];
-
+  checkAndDoRegressions(){
     if (doLinearRegression){
       let linearXValues = [];
       let linearYValues = [];
@@ -123,10 +125,8 @@ class Graph{
         cubicXValues.push(x);
         cubicYValues.push(cubicRegression().D * x ** 3 + cubicRegression().C * x ** 2 + cubicRegression().B * x + cubicRegression().A);
       }
-      data[data.length] = {x:cubicXValues, y:cubicYValues, mode:"lines", name:`f(x) ≈ ${cubicRegression().D.toFixed(2)}x^3 + ${cubicRegression().C.toFixed(2)}x^2 + ${cubicRegression().B.toFixed(2)}x + ${cubicRegression().AtoFixed(2)}`};
+      data[data.length] = {x:cubicXValues, y:cubicYValues, mode:"lines", name:`f(x) ≈ ${cubicRegression().D.toFixed(2)}x^3 + ${cubicRegression().C.toFixed(2)}x^2 + ${cubicRegression().B.toFixed(2)}x + ${cubicRegression().A.toFixed(2)}`};
     }
-
-    layout = {title: titleSting, yaxis:{autorange: false, range: [this.YMin, this.YMax]}, xaxis:{autorange: false, range: [this.XMin, this.XMax]}};
   }
 }
 
@@ -158,335 +158,54 @@ class Bots{
   }
 }
 
+function preload(){
+  img = loadImage("robot-meme.gif");
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-  textSize(15);
-  fill('white');
-  textAlign(CENTER, CENTER);
-  resizeCanvas(windowWidth, windowHeight);
+  basicSetupForTextAndWindow();
 
   if (state === "startScreen"){
     background("purple");
-    if (!isElementsOnThisSceenLoaded){
-      qnaButton = createButton("QNA Bot");
-      qnaButton.elt.id = "startQNAButton";
-      qnaButton.addClass("startScreenButtons");
-
-      toxicityButton = createButton("Toxicity Detection");
-      toxicityButton.elt.id = "startToxicitybutton";
-      toxicityButton.addClass("startScreenButtons");
-
-      graphButtion = createButton("Graph");
-      graphButtion.elt.id = "startGraphButton";
-      graphButtion.addClass("startScreenButtons");
-      
-      isElementsOnThisSceenLoaded = true;
-    }
-
-    qnaButton.mousePressed(() => {
-      state = "qnaScreen";
-      removeElements();
-      isElementsOnThisSceenLoaded = false;
-    });
-
-    graphButtion.mousePressed(() => {
-      state = "graph";
-      removeElements();
-      isElementsOnThisSceenLoaded = false;
-    });
-
-    toxicityButton.mousePressed(() => {
-      state = "toxicity";
-      removeElements();
-      isElementsOnThisSceenLoaded = false;
-    });
+    startTextAndImage();
+    loadElements();
+    
   }
 
-  else if (state === "qnaScreen"){
-    if (!qnaHasLoaded){
-      newBot = new Bots();
-      newBot.loadQNAModel();
-      qnaHasLoaded = true;
-    }
-
-    createAndAskIfReturnButtonPressed();
-
-    if (!isElementsOnThisSceenLoaded){
-      answerButton = createButton('click for answer');
-      answerButton.elt.id = "qnaButton";
-      answerButton.mousePressed(() => {
-        newBot.question = userQuestion.elt.value;
-        newBot.passage = userPassage.elt.value;
-        newBot.findTheAnswer();
-      });
-
-      userPassage = createElement("textarea", "Input a passage");
-      userQuestion = createElement("textarea", "Input a question");
-      userPassage.elt.id = "qnaUserPassage";
-      userQuestion.elt.id = "qnaUserQuestion";
-      userPassage.addClass("qnaInputs");
-      userQuestion.addClass("qnaInputs");
-      isElementsOnThisSceenLoaded = true;
-    }
-
+  else if (state === "qna"){ 
     background("green");
-
-
-
-    try {
-      if (newBot.answer.length <= 0){
-        text("Error no answer found", width/2, height/1.6);
-      }
-
-      for (let i = 0; i < newBot.answer.length; i++){
-        text(`Answer: ${newBot.answer[i].text}  confidence score: ${newBot.answer[i].score.toFixed(2)}`, width/2, height/1.6 + i * 20);
-      }
-    }
-
-    catch {
-      if (newBot.isThisModelLoaded){
-        text("model is loaded", width/2, height/1.6);
-      }
-      else{
-        text("Please wait for model to load", width/2, height/1.6);
-      }
-    }
+    loadNeededBot();
+    createAndAskIfReturnButtonPressed();
+    loadElements();
+    checkQNAForAnswer();
   }
 
   else if (state === "toxicity") {
     background(color(180, 42, 32));
-    if (!toxicityHasLoaded){
-      toxicityNewBot = new Bots();
-      toxicityNewBot.loadToxicityModel();
-      toxicityHasLoaded = true;
-    }
-
+    loadNeededBot();
     createAndAskIfReturnButtonPressed();
-
-    if (!isElementsOnThisSceenLoaded){
-
-      tbl = createElement("table");
-
-      let tr = createElement("tr");
-      tbl.child(tr);
-      for (let word of otherwordlist){
-        theValue = createElement("th", `(${word}):`);
-        theValue.addClass("title");
-        tr.child(theValue);
-      }
-
-      for (let word of wordList){
-        let tr = createElement("tr");
-        tbl.child(tr);
-        for (let i = 0; i < 4; i++){
-          if (i === 0){
-            theValue = createElement("th", word);
-          }
-          else{
-            theValue = createElement("td", "waiting input");
-            theValue.addClass("numbers");
-          }
-          tr.child(theValue);
-        }
-      }
-
-      userPassage = createElement("textarea", "input a passage");
-      userPassage.elt.id = "toxicityPassage";
-
-      answerButton = createButton('click for answer');
-      answerButton.elt.id = "toxicityButtion";
-      answerButton.mousePressed(() => {
-        if (toxicityNewBot.isThisModelLoaded){
-          toxicityNewBot.passage = userPassage.elt.value;
-          toxicityNewBot.findIfPassageIsToxic();
-        }
-      });
-
-      isElementsOnThisSceenLoaded = true;
-    }
-
-    try{
-      for (let i = 1; i < tbl.elt.childElementCount; i++){
-        if (predictions[i-1].results[0].match === null){
-          tbl.elt.children[i].children[1].innerHTML = "not confident to make choice";
-        }
-        else{
-          tbl.elt.children[i].children[1].innerHTML = predictions[i-1].results[0].match;
-        }
-
-        for (let j = 2; j < 4; j++){
-          tbl.elt.children[i].children[j].innerHTML = `${(predictions[i-1].results[0].probabilities[j-2] * 100).toFixed(1)}%`;
-        }
-      }
-    }
-
-    catch{
-      if (toxicityNewBot.isThisModelLoaded){
-        text("it is loaded", width/4, height/2.2);
-      }
-      else{
-        text("wait to load", width/4, height/2.2);
-      }
-    }
+    loadElements();
+    fillToxicityTableWithAnswers();
   }
 
   else if (state === "graph"){
     background("mediumslateblue");
     createAndAskIfReturnButtonPressed();
-
-    if (!isElementsOnThisSceenLoaded){    
-      buttonSwap = createButton();
-      buttonSwap.elt.id = "graphingSwap";
-      graphBot = new Graph();
-      div = createElement("div");
-      div.elt.id = "graphArea";
-
-      userXMin = createInput("X Min", "number");
-      userXMin.elt.id = "userXMin";
-      userXMin.addClass("graphInputNumbers");
-
-      userYmin = createInput("Y min", "number");
-      userYmin.elt.id = "userYmin";
-      userYmin.addClass("graphInputNumbers");
-
-      userXMax = createInput("X Max", "number");
-      userXMax.elt.id = "userXMax";
-      userXMax.addClass("graphInputNumbers");
-
-      userYMax = createInput("Y Max", "number");
-      userYMax.elt.id = "userYMax";
-      userYMax.addClass("graphInputNumbers");
-
-      answerButton = createButton('click for answer');
-      answerButton.elt.id = "graphButton";
-
-      if (graphingState === "tableGraphing"){
-        linearRegressionButton = createButton("linear regression off");
-        linearRegressionButton.elt.id = "linearRegressionButton";
-        linearRegressionButton.mousePressed(() => {
-          if (!doLinearRegression){
-            linearRegressionButton.elt.innerHTML = "linear regression on";
-          }
-          else{
-            linearRegressionButton.elt.innerHTML = "linear regression off";
-          }
-          doLinearRegression = !doLinearRegression;
-        });
-
-        quadraticRegressionButton = createButton("quadratic regression off");
-        quadraticRegressionButton.elt.id = "quadraticRegressionButton";
-        quadraticRegressionButton.mousePressed(() => {
-          if (!doQuadraticRegression){
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression on";
-          }
-          else{
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression off";
-          }
-          doQuadraticRegression = !doQuadraticRegression;
-        });
-
-        quadraticRegressionButton = createButton("quadratic regression off");
-        quadraticRegressionButton.elt.id = "quadraticRegressionButton";
-        quadraticRegressionButton.mousePressed(() => {
-          if (!doQuadraticRegression){
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression on";
-          }
-          else{
-            quadraticRegressionButton.elt.innerHTML = "quadratic regression off";
-          }
-          doQuadraticRegression = !doQuadraticRegression;
-        });
-
-        cubicRegressionButton = createButton("cubic regression off");
-        cubicRegressionButton.elt.id = "cubicRegressionButton";
-        cubicRegressionButton.mousePressed(() => {
-          if (!doCubicRegression){
-            cubicRegressionButton.elt.innerHTML = "cubic regression on";
-          }
-          else{
-            cubicRegressionButton.elt.innerHTML = "cubic regression off";
-          }
-          doCubicRegression = !doCubicRegression;
-        });
-
-        userXTable = createElement("textarea");
-        userXTable.elt.id = "XTable";
-        userXTable.addClass("userTable");
-
-        userYTable = createElement("textarea");
-        userYTable.elt.id = "YTable";
-        userYTable.addClass("userTable");
-
-        buttonSwap.elt.innerHTML = 'swap to function graphing';
-        buttonSwap.mousePressed(() => {
-          removeElements();
-          graphingState = "function";
-          isElementsOnThisSceenLoaded = false;
-        });
-      }
-
-      if (graphingState === "function"){
-
-        userFunction = createElement("textarea", "Function");
-        userFunction.elt.id = "userFunction";
-
-        userStep = createInput("Step Size", "number");
-        userStep.elt.id = "userStep";
-        userStep.addClass("graphInputNumbers");
-
-        buttonSwap.elt.innerHTML = 'swap to table graphing';
-        buttonSwap.mousePressed(() => {
-          removeElements();
-          graphingState = "tableGraphing";
-          isElementsOnThisSceenLoaded = false;
-        });
-      }
-
-      answerButton.mousePressed(() => {
-
-        if (graphingState === "function"){
-          graphBot.step = Number(userStep.elt.value);
-
-          graphBot.function = userFunction.elt.value;
-
-          graphBot.mathToComputerNotation();
-        }
-
-        else if (graphingState === "tableGraphing"){
-          graphBot.XTable = userXTable.elt.value.split(", ");
-          graphBot.YTable = userYTable.elt.value.split(", ");
-        }
-
-        graphBot.XMin = Number(userXMin.elt.value);
-        graphBot.YMin = Number(userYmin.elt.value);
-        graphBot.XMax = Number(userXMax.elt.value);
-        graphBot.YMax = Number(userYMax.elt.value);
-
-        graphBot.graph();
-
-        Plotly.newPlot("graphArea", data, layout);
-      });
-      isElementsOnThisSceenLoaded = true;
-    }
-
-    text("X Min", width/5, height/5);
-    text("Y Min", width/2.85, height/5);
-    text("X Max", width/2, height/5);
-    text("Y Max", width/1.54, height/5);
-
-    if (graphingState === "function"){
-      text("Input a function to graph", width/2, height/8.5);
-      text("Step Size", width/1.25, height/5);
-    }
-
-    else if (graphingState === "tableGraphing"){
-      text("x Table", width/2.5, height/10);
-      text("y Table", width/1.68, height/10);
-    }
+    loadElements();
+    tableAndFunctionGrpahingUI();
   }
+}
+
+function basicSetupForTextAndWindow(){
+  textSize(15);
+  fill('white');
+  textAlign(CENTER, CENTER);
+  resizeCanvas(windowWidth, windowHeight);
+  noSmooth();
 }
 
 function createAndAskIfReturnButtonPressed(){
@@ -524,15 +243,15 @@ function linearRegression(){
   let b;
 
   for (let i = 0; i < graphBot.XTable.length; i++){
-    avgX += Number(graphBot.XTable[i]);
-    avgY += Number(graphBot.YTable[i]);
+    averageOfX += Number(graphBot.XTable[i]);
+    averageOfY += Number(graphBot.YTable[i]);
   }
-  avgX = avgX / graphBot.XTable.length;
-  avgY = avgY / graphBot.YTable.length;
+  averageOfX = averageOfX / graphBot.XTable.length;
+  averageOfY = averageOfY / graphBot.YTable.length;
   
   for (let i = 0; i < graphBot.XTable.length; i++){
-    values.push((avgX - Number(graphBot.XTable[i]))* (avgY- Number(graphBot.YTable[i])));
-    theXvalues.push((avgX - Number(graphBot.XTable[i]))** 2);
+    values.push((averageOfX - Number(graphBot.XTable[i]))* (averageOfY- Number(graphBot.YTable[i])));
+    theXvalues.push((averageOfX - Number(graphBot.XTable[i]))** 2);
   }
   
   for (let i = 0; i < values.length; i++){
@@ -541,7 +260,7 @@ function linearRegression(){
   }
   
   b = counter / Xcounter;
-  a = b * avgX - avgY;
+  a = b * averageOfX - averageOfY;
 
   return {A: a, B: b};
 }
@@ -557,13 +276,11 @@ function quadraticRegression(){
   let x4 = 0;
   let xy = 0;
   let x2y = 0;
-
-  
-  let SigXX = 0;
-  let SigXY = 0;
-  let SigXX2 = 0;
-  let SigX2Y = 0;
-  let SigX2X2 = 0;
+  let sigmaXX = 0;
+  let sigmaXY = 0;
+  let sigmaXX2 = 0;
+  let sigmaX2Y = 0;
+  let sigmaX2X2 = 0;
 
   for (let i = 0; i < graphBot.XTable.length; i++){
     x += Number(graphBot.XTable[i]);
@@ -575,17 +292,17 @@ function quadraticRegression(){
     x2y += Number(graphBot.XTable[i]) ** 2 * Number(graphBot.YTable[i]);
   }
   
-  SigXX = x2 - x**2 / graphBot.XTable.length;
-  SigXY = xy - x * y / graphBot.XTable.length;
-  SigXX2 = x3 - x2 * x / graphBot.XTable.length;
-  SigX2Y = x2y - x2 * y / graphBot.XTable.length;
-  SigX2X2 = x4 - x2 ** 2 / graphBot.XTable.length;
+  sigmaXX = x2 - x**2 / graphBot.XTable.length;
+  sigmaXY = xy - x * y / graphBot.XTable.length;
+  sigmaXX2 = x3 - x2 * x / graphBot.XTable.length;
+  sigmaX2Y = x2y - x2 * y / graphBot.XTable.length;
+  sigmaX2X2 = x4 - x2 ** 2 / graphBot.XTable.length;
   
-  a = (SigX2Y * SigXX - SigXY * SigXX2) / (SigXX * SigX2X2 - SigXX2**2);
-  b = (SigXY * SigX2X2 - SigX2Y * SigXX2) / (SigXX * SigX2X2 - SigXX2**2);
+  a = (sigmaX2Y * sigmaXX - sigmaXY * sigmaXX2) / (sigmaXX * sigmaX2X2 - sigmaXX2**2);
+  b = (sigmaXY * sigmaX2X2 - sigmaX2Y * sigmaXX2) / (sigmaXX * sigmaX2X2 - sigmaXX2**2);
   c = y/graphBot.XTable.length - b * (x / graphBot.XTable.length) - a * (x2/graphBot.XTable.length);
 
-  return {A: a, B: b, C: c, XX: SigXY};
+  return {A: a, B: b, C: c};
 }
 
 function cubicRegression(){
@@ -613,12 +330,367 @@ function cubicRegression(){
   TxMatrix = matrix(xMatrix.trans());
   TxMatrix_XMatrix = matrix(TxMatrix.prod(xMatrix));
   inversedTxMatrix_XMatrix = matrix(TxMatrix_XMatrix.inv());
-  console.log(inversedTxMatrix_XMatrix());
 
   cubicAnswer = matrix(inversedTxMatrix_XMatrix.prod(TxMatrix));
-  console.log(cubicAnswer());
   finalCubicAnswer = matrix(cubicAnswer.prod(yMatrix));
-  console.log(finalCubicAnswer());
 
   return {A: finalCubicAnswer()[0][0], B: finalCubicAnswer()[1][0], C: finalCubicAnswer()[2][0], D: finalCubicAnswer()[3][0]};
+}
+
+function loadNeededBot(){
+  if (!qnaHasLoaded && state === "qna"){
+    qnaBot = new Bots();
+    qnaBot.loadQNAModel();
+    qnaHasLoaded = true;
+  }
+
+  else if (!toxicityHasLoaded && state === "toxicity"){
+    toxicityBot = new Bots();
+    toxicityBot.loadToxicityModel();
+    toxicityHasLoaded = true;
+  }
+}
+
+function loadElements(){
+
+  // loading start screen elements
+  if (!isElementsOnThisSceenLoaded && state === "startScreen"){
+    createStartScreenButtons();
+    
+    isElementsOnThisSceenLoaded = true;
+  }
+
+  // loading qna elements
+  else if (!isElementsOnThisSceenLoaded && state === "qna"){
+    createAnswerButton();
+
+    userPassage = createElement("textarea", "Input a passage");
+    userQuestion = createElement("textarea", "Input a question");
+
+    userPassage.elt.id = "qnaUserPassage";
+    userQuestion.elt.id = "qnaUserQuestion";
+
+    userPassage.addClass("qnaInputs");
+    userQuestion.addClass("qnaInputs");
+    isElementsOnThisSceenLoaded = true;
+  }
+
+  // loading toxicity elements
+  else if (!isElementsOnThisSceenLoaded && state === "toxicity"){
+    createToxicityTable();
+
+    userPassage = createElement("textarea", "input a passage");
+    userPassage.elt.id = "toxicityPassage";
+
+    createAnswerButton();
+
+    isElementsOnThisSceenLoaded = true;
+  }
+
+  // loading graphing elements
+  else if (!isElementsOnThisSceenLoaded && state === "graph"){    
+    createButtonsAndInputsGraphing();
+
+    if (graphingState === "table"){
+      makeRegressionButtons();
+
+      userXTable = createElement("textarea");
+      userXTable.elt.id = "XTable";
+      userXTable.addClass("userTable");
+
+      userYTable = createElement("textarea");
+      userYTable.elt.id = "YTable";
+      userYTable.addClass("userTable");
+
+      swapButton();
+    }
+
+    if (graphingState === "function"){  
+      userFunction = createElement("textarea", "Function");
+      userFunction.elt.id = "userFunction";
+
+      userStep = createInput("Step Size", "number");
+      userStep.elt.id = "userStep";
+      userStep.addClass("graphInputNumbers");
+
+      swapButton();
+    }
+
+    createAnswerButton();
+  }
+}
+
+function checkQNAForAnswer(){
+  try {
+    if (qnaBot.answer.length <= 0){
+      text("Error no answer found", width/2, height/1.6);
+    }
+
+    for (let i = 0; i < qnaBot.answer.length; i++){
+      text(`Answer: ${qnaBot.answer[i].text}  confidence score: ${qnaBot.answer[i].score.toFixed(2)}`, width/2, height/1.6 + i * 20);
+    }
+  }
+
+  catch {
+    if (qnaBot.isThisModelLoaded){
+      text("model is loaded", width/2, height/1.6);
+    }
+    else{
+      text("Please wait for model to load", width/2, height/1.6);
+    }
+  }
+}
+
+function createStartScreenButtons(){
+  qnaButton = createButton("QNA Bot");
+  qnaButton.elt.id = "startQNAButton";
+  qnaButton.addClass("startScreenButtons");
+
+  qnaButton.mousePressed(() => {
+    state = "qna";
+    removeElements();
+    isElementsOnThisSceenLoaded = false;
+  });
+
+
+  toxicityButton = createButton("Toxicity Detection");
+  toxicityButton.elt.id = "startToxicitybutton";
+  toxicityButton.addClass("startScreenButtons");
+
+  toxicityButton.mousePressed(() => {
+    state = "toxicity";
+    removeElements();
+    isElementsOnThisSceenLoaded = false;
+  });
+
+
+  graphButtion = createButton("Graph");
+  graphButtion.elt.id = "startGraphButton";
+  graphButtion.addClass("startScreenButtons");
+
+  graphButtion.mousePressed(() => {
+    state = "graph";
+    removeElements();
+    isElementsOnThisSceenLoaded = false;
+  });
+}
+
+function fillToxicityTableWithAnswers(){
+  try{
+    for (let i = 1; i < tbl.elt.childElementCount; i++){
+      if (predictions[i-1].results[0].match === null){
+        tbl.elt.children[i].children[1].innerHTML = "not confident to make choice";
+      }
+      else{
+        tbl.elt.children[i].children[1].innerHTML = predictions[i-1].results[0].match;
+      }
+
+      for (let j = 2; j < 4; j++){
+        tbl.elt.children[i].children[j].innerHTML = `${(predictions[i-1].results[0].probabilities[j-2] * 100).toFixed(1)}%`;
+      }
+    }
+  }
+
+  catch{
+    if (toxicityBot.isThisModelLoaded){
+      text("it is loaded", width/4, height/2.2);
+    }
+    else{
+      text("wait to load", width/4, height/2.2);
+    }
+  }
+}
+
+function tableAndFunctionGrpahingUI(){
+
+  text("X Min", width/5, height/5);
+  text("Y Min", width/2.85, height/5);
+  text("X Max", width/2, height/5);
+  text("Y Max", width/1.54, height/5);
+
+  if (graphingState === "function"){
+    text("Input a function to graph", width/2, height/8.5);
+    text("Step Size", width/1.25, height/5);
+  }
+
+  else if (graphingState === "table"){
+    text("x Table", width/2.5, height/10);
+    text("y Table", width/1.68, height/10);
+  }
+}
+
+function makeRegressionButtons(){
+  linearRegressionButton = createButton("linear regression off");
+  linearRegressionButton.elt.id = "linearRegressionButton";
+  linearRegressionButton.addClass("regressionButtons")
+  linearRegressionButton.mousePressed(() => {
+    if (!doLinearRegression){
+      linearRegressionButton.elt.innerHTML = "linear regression on";
+    }
+    else{
+      linearRegressionButton.elt.innerHTML = "linear regression off";
+    }
+    doLinearRegression = !doLinearRegression;
+  });
+
+  quadraticRegressionButton = createButton("quadratic regression off");
+  quadraticRegressionButton.elt.id = "quadraticRegressionButton";
+  quadraticRegressionButton.addClass("regressionButtons")
+  quadraticRegressionButton.mousePressed(() => {
+    if (!doQuadraticRegression){
+      quadraticRegressionButton.elt.innerHTML = "quadratic regression on";
+    }
+    else{
+      quadraticRegressionButton.elt.innerHTML = "quadratic regression off";
+    }
+    doQuadraticRegression = !doQuadraticRegression;
+  });
+
+  cubicRegressionButton = createButton("cubic regression off");
+  cubicRegressionButton.elt.id = "cubicRegressionButton";
+  cubicRegressionButton.addClass("regressionButtons")
+  cubicRegressionButton.mousePressed(() => {
+    if (!doCubicRegression){
+      cubicRegressionButton.elt.innerHTML = "cubic regression on";
+    }
+    else{
+      cubicRegressionButton.elt.innerHTML = "cubic regression off";
+    }
+    doCubicRegression = !doCubicRegression;
+  });
+}
+
+function createButtonsAndInputsGraphing(){
+  buttonSwap = createButton();
+  buttonSwap.elt.id = "graphingSwap";
+  graphBot = new Graph();
+  div = createElement("div");
+  div.elt.id = "graphArea";
+
+  userXMin = createInput("X Min", "number");
+  userXMin.elt.id = "userXMin";
+  userXMin.addClass("graphInputNumbers");
+
+  userYmin = createInput("Y min", "number");
+  userYmin.elt.id = "userYmin";
+  userYmin.addClass("graphInputNumbers");
+
+  userXMax = createInput("X Max", "number");
+  userXMax.elt.id = "userXMax";
+  userXMax.addClass("graphInputNumbers");
+
+  userYMax = createInput("Y Max", "number");
+  userYMax.elt.id = "userYMax";
+  userYMax.addClass("graphInputNumbers");
+}
+
+function createAnswerButton(){
+  if (state === "qna"){
+    answerButton = createButton('click for answer');
+    answerButton.elt.id = "qnaAnswerButton";
+    answerButton.addClass("answerbutton")
+    answerButton.mousePressed(() => {
+      qnaBot.question = userQuestion.elt.value;
+      qnaBot.passage = userPassage.elt.value;
+      qnaBot.findTheAnswer();
+    });
+  }
+
+  else if (state === "toxicity"){
+    answerButton = createButton('click for answer');
+    answerButton.elt.id = "toxicityAnswerButtion";
+    answerButton.addClass("answerbutton");
+    answerButton.mousePressed(() => {
+      if (toxicityBot.isThisModelLoaded){
+        toxicityBot.passage = userPassage.elt.value;
+        toxicityBot.findIfPassageIsToxic();
+      }
+    });
+  }
+
+  else if (state === "graph"){
+    answerButton = createButton('click for answer');
+    answerButton.elt.id = "graphAnswerButton";
+    answerButton.addClass("answerbutton");
+    answerButton.mousePressed(() => {
+
+    if (graphingState === "function"){
+      graphBot.step = Number(userStep.elt.value);
+
+      graphBot.function = userFunction.elt.value;
+
+      graphBot.mathToComputerNotation();
+    }
+
+    else if (graphingState === "table"){
+     graphBot.XTable = userXTable.elt.value.split(", ");
+      graphBot.YTable = userYTable.elt.value.split(", ");
+    }
+
+    graphBot.XMin = Number(userXMin.elt.value);
+    graphBot.YMin = Number(userYmin.elt.value);
+    graphBot.XMax = Number(userXMax.elt.value);
+    graphBot.YMax = Number(userYMax.elt.value);
+
+    graphBot.graph();
+
+    Plotly.newPlot("graphArea", data, layout);
+    });
+    isElementsOnThisSceenLoaded = true;
+  }
+}
+
+function createToxicityTable(){
+  let typesOfAttacks = ["identity attack", "insult", "obscene", "servere toxicity", "sexual explicit", "threat", "toxicity"];
+  let titleWords = ["Type of Attack", "Is F or T", "Prob of F", "Prob of T"];
+
+  tbl = createElement("table");
+
+  let tr = createElement("tr");
+  tbl.child(tr);
+  for (let word of titleWords){
+    theValue = createElement("th", `(${word}):`);
+    theValue.addClass("title");
+    tr.child(theValue);
+  }
+
+  for (let word of typesOfAttacks){
+    let tr = createElement("tr");
+    tbl.child(tr);
+    for (let i = 0; i < 4; i++){
+      if (i === 0){
+        theValue = createElement("th", word);
+      }
+      else{
+        theValue = createElement("td", "waiting input");
+        theValue.addClass("numbers");
+      }
+      tr.child(theValue);
+    }
+  }
+}
+
+function swapButton(){
+  if (graphingState === "table"){
+    buttonSwap.elt.innerHTML = 'swap to function graphing';
+    buttonSwap.mousePressed(() => {
+      removeElements();
+      graphingState = "function";
+      isElementsOnThisSceenLoaded = false;
+    });
+  }
+  else {
+    buttonSwap.elt.innerHTML = 'swap to table graphing';
+    buttonSwap.mousePressed(() => {
+      removeElements();
+      graphingState = "table";
+      isElementsOnThisSceenLoaded = false;
+    });
+  }
+}
+
+function startTextAndImage(){
+  text("Three kinda useful things ;)", width/2.05, height/4);
+  text("by Caylixx Starr", width/2.05, height/3.6)
+  image(img, width / 1.8, height/12);
 }

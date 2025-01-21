@@ -11,4 +11,5 @@
 ## comp sci expert (tyrell starr)
 
 - needs instructions
-- 
+- looks good
+- bit hard to navagate

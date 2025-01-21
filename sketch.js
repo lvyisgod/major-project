@@ -1,10 +1,6 @@
 // qna, Toxicity and Graphing Bots
 // Caylixx Starr
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
-
+// nov 21 2024
 // Matrix coded copied from https://github.com/RaghavCodeHub/matrix/tree/master
 
 let img;
